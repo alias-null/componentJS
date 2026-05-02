@@ -1,0 +1,19 @@
+<script>
+   const { val, called } = this;
+   var param = val([[0, 1, 2], [3, 4, 5],]);
+
+   setTimeout(() => {
+      param.val = [[6, 7, 8], [9, 10, 11], [12, 13, 14],];
+   }, 1000);
+
+   return {
+      param,
+   };
+</script>
+
+<for .="vv1 param.val">
+   <h4 .="style.border='2px solid blue'">${vv1}</h4>
+   <for .="vv2 vv1">
+      <h4 .="style.border='2px solid red'">====== ${vv2}</h4>
+   </for>
+</for>

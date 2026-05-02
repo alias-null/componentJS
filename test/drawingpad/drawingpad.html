@@ -1,0 +1,453 @@
+<style>
+   :host {
+      display: flex;
+      height: 100%;
+   }
+
+   #root {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid;
+   }
+
+   #root * {
+      display: flex;
+   }
+
+   #drawingarea {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+   }
+
+   #canvas {
+      width: 100%;
+      height: 100%;
+      vertical-align: middle;
+   }
+
+   #area {
+      position: absolute;
+      border: 0 !important;
+      border-radius: 50%;
+      pointer-events: none;
+      background-color: rgba(0, 0, 0, 0.5);
+      transform: translate(-2px, -2px);
+   }
+
+   #tools {
+      padding: 0.25rem;
+      border-bottom: 1px solid;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      overflow: auto;
+   }
+
+   #tools>div {
+      align-items: center;
+   }
+
+   #tools>button {
+      padding: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      align-items: center;
+      justify-content: center;
+      /* 移動端需要有 border 內部的 svg 尺寸才能正確計算 */
+      border: 1px solid black;
+      border-radius: 2px 2px;
+   }
+
+   #tools>button[-active="2"] {
+      background-color: #000;
+   }
+
+   #tools>button[-active="2"]>svg {
+      fill: #fff;
+   }
+
+   #tools>button[-active="0"]>svg {
+      fill: rgba(0, 0, 0, 0.4);
+   }
+
+   svg {
+      pointer-events: none;
+   }
+
+   #tools>button>svg {
+      fill: #000;
+      width: 80%;
+      height: 80%;
+   }
+
+   #sizediv>input[type="number"] {
+      width: 3rem;
+      outline: none;
+   }
+
+   [-hide] {
+      display: none !important;
+   }
+</style>
+<div id="root">
+   <div id="tools">
+      <button type="button" name="draw" title="绘画笔" .="onclick=buttonEVclick;" ..="-active=active.val.draw">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(0,0,0,1)">
+            <path
+               d="M17.6562 2.10059C18.0467 1.71006 18.6807 1.71006 19.0712 2.10059L21.8994 4.92871C22.2898 5.31916 22.2897 5.95223 21.8994 6.34277L18.2275 10.0137C19.0884 11.1333 19.7705 12.2497 20.2265 13.2861C20.6077 14.1526 20.8537 15.0124 20.8867 15.7979C20.9197 16.5844 20.7382 17.4043 20.1318 18.0107C19.3187 18.8239 18.1403 18.8753 17.0908 18.6602C16.0057 18.4377 14.7879 17.8851 13.5634 17.1104L14.6337 15.4199C15.7389 16.1191 16.7261 16.5441 17.4921 16.7012C18.294 16.8656 18.6148 16.6996 18.7177 16.5967C18.7947 16.5197 18.9074 16.3312 18.8886 15.8818C18.8696 15.4312 18.7177 14.8253 18.3955 14.0928C18.0387 13.2819 17.4993 12.3758 16.8007 11.4404L14.8281 13.4141C14.6405 13.6016 14.3863 13.707 14.1211 13.707H11.2929C10.7406 13.707 10.2929 13.2593 10.2929 12.707V9.87891C10.2929 9.61369 10.3984 9.35941 10.5859 9.17188L12.4423 7.31348C11.4841 6.74889 10.5119 6.37075 9.59567 6.1875C7.88747 5.84607 6.49717 6.1885 5.63571 7.04981C4.7742 7.91131 4.43183 9.30225 4.77341 11.0107C5.11353 12.711 6.11989 14.6051 7.7568 16.2422C9.51458 18 11.565 19.0287 13.3525 19.29L13.0634 21.2686C10.7845 20.9353 8.35452 19.669 6.34274 17.6572C4.46525 15.7797 3.24014 13.5407 2.81247 11.4023C2.38669 9.27248 2.74027 7.11712 4.22165 5.63574C5.70308 4.15446 7.85838 3.80071 9.98824 4.22656C11.2885 4.48662 12.6249 5.04309 13.8955 5.86035L17.6562 2.10059Z">
+            </path>
+         </svg>
+      </button>
+      <button type="button" name="eraser" title="橡皮擦" .="onclick=buttonEVclick;" ..="-active=active.val.eraser">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(0,0,0,1)">
+            <path
+               d="M13.9999 18.9966H20.9999V20.9966H11.9999L8.00229 20.9991L1.51457 14.5113C1.12405 14.1208 1.12405 13.4877 1.51457 13.0971L12.1212 2.49053C12.5117 2.1 13.1449 2.1 13.5354 2.49053L21.3136 10.2687C21.7041 10.6592 21.7041 11.2924 21.3136 11.6829L13.9999 18.9966ZM15.6567 14.5113L19.1922 10.9758L12.8283 4.61185L9.29275 8.14738L15.6567 14.5113Z">
+            </path>
+         </svg>
+      </button>
+      <button type="button" name="undo" title="上一步" .="onclick=buttonEVclick;" ..="-active=active.val.undo">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(0,0,0,1)">
+            <path
+               d="M5.82843 6.99955L8.36396 9.53509L6.94975 10.9493L2 5.99955L6.94975 1.0498L8.36396 2.46402L5.82843 4.99955H13C17.4183 4.99955 21 8.58127 21 12.9996C21 17.4178 17.4183 20.9996 13 20.9996H4V18.9996H13C16.3137 18.9996 19 16.3133 19 12.9996C19 9.68584 16.3137 6.99955 13 6.99955H5.82843Z">
+            </path>
+         </svg>
+      </button>
+      <button type="button" name="redo" title="下一步" .="onclick=buttonEVclick;" ..="-active=active.val.redo">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(0,0,0,1)">
+            <path
+               d="M18.1716 6.99955H11C7.68629 6.99955 5 9.68584 5 12.9996C5 16.3133 7.68629 18.9996 11 18.9996H20V20.9996H11C6.58172 20.9996 3 17.4178 3 12.9996C3 8.58127 6.58172 4.99955 11 4.99955H18.1716L15.636 2.46402L17.0503 1.0498L22 5.99955L17.0503 10.9493L15.636 9.53509L18.1716 6.99955Z">
+            </path>
+         </svg>
+      </button>
+      <button type="button" name="clear" title="清空画板" .="onclick=buttonEVclick;" ..="-active=active.val.clear">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(0,0,0,1)">
+            <path
+               d="M12 3.09723L7.05025 8.04697C4.31658 10.7806 4.31658 15.2128 7.05025 17.9465C9.78392 20.6801 14.2161 20.6801 16.9497 17.9465C19.6834 15.2128 19.6834 10.7806 16.9497 8.04697L12 3.09723ZM12 0.268799L18.364 6.63276C21.8787 10.1475 21.8787 15.846 18.364 19.3607C14.8492 22.8754 9.15076 22.8754 5.63604 19.3607C2.12132 15.846 2.12132 10.1475 5.63604 6.63276L12 0.268799Z">
+            </path>
+         </svg>
+      </button>
+      <button type="button" name="img_download" title="下载图片" .="onclick=buttonEVclick;"
+         ..="-active=active.val.img_download">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(0,0,0,1)">
+            <path
+               d="M21 15V19H24L20 23L16 19H19V15H21ZM21.0078 3C21.5555 3 21.9999 3.44482 22 3.99316V13H20V5H4V18.999L14 9L17 12V14.8291L14 11.8281L6.82715 19H14V21H2.99219C2.44451 21 2.00013 20.5552 2 20.0068V3.99316C2.00013 3.44463 2.45577 3 2.99219 3H21.0078ZM8 7C9.10457 7 10 7.89543 10 9C10 10.1046 9.10457 11 8 11C6.89543 11 6 10.1046 6 9C6 7.89543 6.89543 7 8 7Z">
+            </path>
+         </svg>
+      </button>
+      <if .="pad_ison.val">
+         <div id="sizediv">
+            <input type="range" id="sizeslide" min="1" max="100" step="1" .="
+         value=size_dom_area.val;
+         oninput=sizeinputEVinput;
+         " />
+            <input type="number" id="sizeinput" .="
+         value=size_dom_area.val;
+         oninput=sizeinputEVinput;
+         ">
+         </div>
+      </if>
+   </div>
+
+   <div id="drawingarea">
+      <canvas id="canvas" .="
+      onwheel=canvasEVwheel;
+      onmousemove=canvasEVmousemove;
+      " ..="-active=active.val.canvas" #="dom_canvas"></canvas>
+      <if .="pad_ison.val">
+         <div id="area" .="
+         style.width=`${size_dom_area.val}px`;
+         style.height=`${size_dom_area.val}px`;
+         style.transform=`translate(${area_translate.val.x}px, ${area_translate.val.y}px)`
+         " #="dom_area"></div>
+      </if>
+   </div>
+</div>
+
+<script type="module" src="./signature_pad@5.0.3/signature_pad.min.js"></script>
+
+<script>
+   const { val, module, called } = this;
+
+   const dom_area = val();
+   const dom_canvas = val();
+
+   const objpad = val();
+   const data_pad = val([]);
+   const data_undo = val([]);
+   const pad_ison = val(false);
+   const is_init = val();
+   const size_dom_area = val(10);
+   const area_translate = val({ x: 0, y: 0 });
+   const SignaturePad = module('./signature_pad@5.0.3/signature_pad.min.js');
+   // const op_btn_name = ['undo', 'redo', 'clear'];
+   const pad_size_conf_key = ['dotSize', 'minWidth', 'maxWidth',];
+
+   const active = val({
+      canvas: 1,
+      draw: 1,
+      eraser: 1,
+      undo: 0,
+      redo: 0,
+      clear: 0,
+      img_download: 0,
+   });
+
+   called(() => {
+      // 畫板實例 要設置為 公有 否則暴露的公有函數無法操作
+      objpad.val = new SignaturePad(dom_canvas.val, {
+         // 單點半徑|開頭寬度 默認=不知道
+         dotSize: size_dom_area.val / 2,
+         // 最小線條的寬度 默認=0.5
+         minWidth: size_dom_area.val / 2,
+         // 最大線條寬度 默認=2.5
+         maxWidth: size_dom_area.val / 2,
+         // 繪製下一個點的間隔毫秒 默認=16
+         throttle: 16,
+         // 畫布繪畫點的移動間隔像素 默認=5
+         minDistance: 0.1,
+         // 背景顏色 默認=rgba(0,0,0,0)
+         // backgroundColor: 'rgba(255,255,255,1)',
+         backgroundColor: 'rgba(0,0,0,0)',
+         // 畫筆顏色 默認=black
+         penColor: "rgba(0, 0, 0, 1)",
+         // 速度過濾器權重 不太懂 默認=0.7
+         velocityFilterWeight: 0.5,
+      });
+
+      padEnd();
+
+      // 筆畫開始前 beginStroke
+      // 筆畫結束後 endStroke
+      // 描邊更新前 beforeUpdateStroke
+      // 描邊更新後 afterUpdateStroke
+
+      objpad.val.addEventListener('beginStroke', (customevent) => {
+      });
+
+      objpad.val.addEventListener('endStroke', (customevent) => {
+         data_undo.val = [];
+      });
+
+      objpad.val.addEventListener('beforeUpdateStroke', (customevent) => {
+         if (pad_ison.val) {
+            let { left, top } = dom_canvas.val.getBoundingClientRect();
+            let x = customevent.detail.event.clientX - left;
+            let y = customevent.detail.event.clientY - top;
+            updateDomAreaPosition(x, y);
+            data_pad.val = objpad.val.toData();
+            updateOtherBtnActive();
+         }
+      });
+
+      objpad.val.addEventListener('afterUpdateStroke', (customevent) => {
+         if (pad_ison.val) {
+            if (is_init.val && active.val.eraser === 2) {
+               data_pad.val = [];
+               objpad.val.fromData(data_pad.val);
+               updateOtherBtnActive();
+            }
+         }
+      });
+
+      canvasSizeObserver();
+      const resizeobs = new ResizeObserver((entries) => {
+         canvasSizeObserver();
+      });
+      resizeobs.observe(dom_canvas.val);
+   });
+
+   // 監聽動態修改 canvas 尺寸
+   function canvasSizeObserver(init) {
+      let ratio = Math.max(window.devicePixelRatio || 1, 1);
+      dom_canvas.val.width = dom_canvas.val.offsetWidth * ratio;
+      dom_canvas.val.height = dom_canvas.val.offsetHeight * ratio;
+      dom_canvas.val.getContext('2d').scale(ratio, ratio);
+      data_pad.val = objpad.val.toData();
+      objpad.val.fromData(data_pad.val);
+   }
+
+   function sizeinputEVinput(e) {
+      size_dom_area.val = Math.ceil(+e.target.value);
+      if (size_dom_area.val < 1) {
+         size_dom_area.val = 1;
+      } else if (size_dom_area.val > 100) {
+         size_dom_area.val = 100;
+      }
+      updatePadConfigSize();
+   }
+
+   function canvasEVwheel(e) {
+      if (dom_area.val) {
+         if (e.deltaY < 0) {
+            size_dom_area.val += 1;
+         } else if (e.deltaY > 0) {
+            size_dom_area.val -= 1;
+         }
+         if (size_dom_area.val < 1) {
+            size_dom_area.val = 1;
+         } else if (size_dom_area.val > 100) {
+            size_dom_area.val = 100;
+         }
+         updatePadConfigSize();
+         updateDomAreaPosition(e.offsetX, e.offsetY);
+      }
+   }
+
+   function canvasEVmousemove(e) {
+      updateDomAreaPosition(e.offsetX, e.offsetY);
+   }
+
+   function updateDomAreaPosition(x, y) {
+      if (dom_area.val) {
+         area_translate.val.x = x - dom_area.val.offsetWidth / 2;
+         area_translate.val.y = y - dom_area.val.offsetHeight / 2;
+      }
+   }
+
+   function updatePadConfigSize() {
+      if (pad_ison.val) {
+         for (let k of pad_size_conf_key) {
+            objpad.val[k] = size_dom_area.val / 2;
+         }
+      }
+   }
+
+   function padSta() {
+      objpad.val.on();
+      pad_ison.val = 1;
+      updateOtherBtnActive();
+   }
+
+   function padEnd() {
+      objpad.val.off();
+      pad_ison.val = 0;
+      updateOtherBtnActive();
+   }
+
+   function padUndo() {
+      if (pad_ison.val) {
+         if (data_pad.val.length) {
+            data_undo.val.push(data_pad.val.pop());
+            objpad.val.fromData(data_pad.val);
+         }
+         updateOtherBtnActive();
+      }
+   }
+
+   function padRedo() {
+      if (pad_ison.val) {
+         if (data_undo.val.length) {
+            data_pad.val.push(data_undo.val.pop());
+            objpad.val.fromData(data_pad.val);
+         }
+         updateOtherBtnActive();
+      }
+   }
+
+   function padClear() {
+      if (pad_ison.val) {
+         objpad.val.clear();
+      }
+   }
+
+   function updateOtherBtnActive() {
+      active.val.undo = data_pad.val.length ? 1 : 0;
+      active.val.redo = data_undo.val.length ? 1 : 0;
+      active.val.clear = objpad.val.isEmpty() ? 0 : 1;
+      active.val.img_download = objpad.val.isEmpty() ? 0 : 1;
+   }
+
+   function updateOtherBtnActive0() {
+      active.val.undo = 0;
+      active.val.redo = 0;
+      active.val.clear = 0;
+   }
+
+   /**
+    * 獲取畫布的圖像 base64 
+    * @param {String} mime image/jpeg | image/png | image/svg+xml | image/other
+    * @returns {String}
+    */
+   function getdata(mime) {
+      if (dom_canvas.val) {
+         const canvas = document.createElement('canvas');
+         const cx = canvas.getContext('2d');
+         canvas.width = dom_canvas.val.width;
+         canvas.height = dom_canvas.val.height;
+         cx.fillStyle = '#fff';
+         cx.fillRect(0, 0, canvas.width, canvas.height);
+         cx.drawImage(dom_canvas.val, 0, 0);
+         return canvas.toDataURL(mime);
+      }
+   }
+
+   function downloadUrl(url, filename) {
+      const dom = document.createElement('a');
+      dom.href = url;
+      dom.download = filename;
+      dom.click();
+      setTimeout(() => {
+         window.URL.revokeObjectURL(url);
+      }, 0);
+   }
+
+   function buttonEVclick(e) {
+      const name = e.target.name;
+      if (name === 'draw') {
+         active.val.eraser = 1;
+         // 自锁按钮
+         if (active.val.draw === 2) {
+            padEnd();
+            active.val.draw = 1;
+            updateOtherBtnActive0();
+            return;
+         }
+         padSta();
+         active.val.draw = 2;
+         objpad.val.compositeOperation = 'source-over';
+         is_init.val = objpad.val.isEmpty();
+      } else if (name === 'eraser') {
+         active.val.draw = 1;
+         // 自锁按钮
+         if (active.val.eraser === 2) {
+            padEnd();
+            active.val.eraser = 1;
+            updateOtherBtnActive0();
+            return;
+         }
+         padSta();
+         active.val.eraser = 2;
+         objpad.val.compositeOperation = 'destination-out';
+         is_init.val = objpad.val.isEmpty();
+      } else if (name === 'undo') {
+         padUndo();
+      } else if (name === 'redo') {
+         padRedo();
+      } else if (name === 'clear') {
+         padClear();
+      } else if (name === 'img_download') {
+         if (!objpad.val.isEmpty()) {
+            downloadUrl(
+               getdata('image/png'),
+               `${crypto.randomUUID()}.png`
+            );
+         }
+      }
+   }
+
+
+   return {
+      dom_area,
+      dom_canvas,
+
+      active,
+      pad_ison,
+      size_dom_area,
+      area_translate,
+      canvasEVwheel,
+      canvasEVmousemove,
+      buttonEVclick,
+      sizeinputEVinput,
+   }
+</script>

@@ -1,0 +1,27 @@
+<button type="button" .="
+   onclick=handleClick;
+   style.fontSize=`${count.val/2}px`;
+   style.width=`${count.val}px`;
+   style.height=`${count.val}px`;
+   " #="dom_btn"> ${count.val} </button>
+
+<script>
+   const { val } = this;
+   const count = val(30);
+   const dom_btn = val();
+
+   function handleClick(e) {
+      count.val -= 5;
+   }
+
+   setInterval(() => {
+      count.val += 10;
+      console.log(dom_btn.val);
+   }, 1000);
+
+   return {
+      count,
+      dom_btn,
+      handleClick,
+   }
+</script>
