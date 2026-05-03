@@ -1,7 +1,4 @@
 
-# *.cli
-# *.json
 # .gitignore
 
-**.babel.js
 node_modules/
