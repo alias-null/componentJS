@@ -244,15 +244,15 @@
       // 先从共享作用域开始
       assign(cf.a, $this.$vd);
       if (cf.p) {
-         let scope = [];
+         let arr = [];
          let pcf = cf.p;
          while (pcf) {
-            push(scope, pcf.a);
+            push(arr, pcf.a);
             pcf = pcf.p;
          }
          // 从祖先作用域开始到父节点作用域结束
-         while (length(scope)) {
-            assign(cf.a, pop(scope));
+         for (let i = length(arr) - 1; i >= 0; i--) {
+            assign(cf.a, arr[i]);
          }
       }
    };
