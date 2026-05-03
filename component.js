@@ -162,6 +162,15 @@
       }
    };
 
+   const removeOldNodes = (com0, com1) => {
+      let c0 = nextSibling(com0);
+      while (c0 && c0 !== com1) {
+         let c1 = c0;
+         c0 = nextSibling(c0);
+         remove(c1);
+      }
+   };
+
    const childsCopyToArray = (a) => {
       let b = [];
       let c = getType(a) === 'NodeList' ? a : childNodes(a);
@@ -526,23 +535,13 @@
                      func(`${sexp}switch(${prop}){${code.join('')}}`);
                }
 
-               let c0 = nextSibling(com0);
-               while (c0 && c0 !== com1) {
-                  let c1 = c0;
-                  c0 = nextSibling(c0);
-                  remove(c1);
-               }
+               removeOldNodes(com0, com1);
 
                cf.b[9].call($this, cf, (k) => {
                   parseChildNode($this, subs[k].n, cf, true);
                });
                // try {
-               //    let c0 = nextSibling(com0);
-               //    while (c0 && c0 !== com1) {
-               //       let c1 = c0;
-               //       c0 = nextSibling(c0);
-               //       remove(c1);
-               //    }
+               //    removeOldNodes(com0, com1);
 
                //    cf.b[9].call($this, cf, (k) => {
                //       cf.b[40] = subs[k].c;
@@ -637,23 +636,13 @@
                      func(`${sexp}${code.join('')}`);
                }
 
-               let c0 = nextSibling(com0);
-               while (c0 && c0 !== com1) {
-                  let c1 = c0;
-                  c0 = nextSibling(c0);
-                  remove(c1);
-               }
+               removeOldNodes(com0, com1);
 
                cf.b[9].call($this, cf, (k) => {
                   parseChildNode($this, subs[k].n, cf, true);
                });
                // try {
-               //    let c0 = nextSibling(com0);
-               //    while (c0 && c0 !== com1) {
-               //       let c1 = c0;
-               //       c0 = nextSibling(c0);
-               //       remove(c1);
-               //    }
+               //    removeOldNodes(com0, com1);
 
                //    cf.b[9].call($this, cf, (k) => {
                //       cf.b[40] = subs[k].c;
