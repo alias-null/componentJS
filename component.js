@@ -1109,7 +1109,7 @@
    };
 
    const createProxy = ($this, data) => {
-      $fp = $this.$fp;
+      let $fp = $this.$fp;
       return new Proxy(data, {
          // 拦截 deleteProperty（delete 操作）
          deleteProperty(target, key) {
