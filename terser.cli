@@ -1,1 +1,0 @@
-terser component.js --config-file terser.config.json -o component.min.js

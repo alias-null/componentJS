@@ -173,7 +173,10 @@
 
    const childsCopyToArray = (a) => {
       let b = [];
-      let c = getType(a) === 'NodeList' ? a : childNodes(a);
+      let c = childNodes(a);
+      if (!c) {
+         c = a;
+      }
       for (let i = 0, l = length(c); i < l; i++) {
          b[i] = c[i];
       }

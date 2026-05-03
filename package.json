@@ -1,0 +1,13 @@
+{
+   "dependencies": {
+      "core-js": "^3.49.0"
+   },
+   "devDependencies": {
+      "@babel/cli": "^7.28.6",
+      "@babel/core": "^7.29.0",
+      "@babel/preset-env": "^7.29.3"
+   },
+   "scripts": {
+      "build": "babel ./component.js -o ./dist/component.babel.js && terser ./dist/component.babel.js -o ./dist/component.min.js --config-file terser.config.json"
+   }
+}
