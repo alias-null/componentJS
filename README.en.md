@@ -1,7 +1,7 @@
 # componentjs
 
 #### Description
-CDN引入一个文件就能响应式数据更新DOM，何乐而不为？只需写html、js、css，无需再学习第三方知识，目前支持html单文件或html+js+css文件，已实现的流程控制 if | else、for、switch，其他待完善，比如组件间通信...等等
+CDN引入一个文件就能响应式数据更新DOM，只需写html、js、css，无需再学习第三方知识，目前支持html单文件或html+js+css文件，已实现的流程控制 if | else、for、switch，其他待完善，比如组件间通信...等等
 
 #### Software Architecture
 Software architecture description
