@@ -1,0 +1,10 @@
+{
+   "module": true,
+   "compress": {
+      "passes": 3
+   },
+   "mangle": {},
+   "output": {},
+   "parse": {},
+   "rename": {}
+}
