@@ -20,6 +20,12 @@
    const gb_reg4 = /([^'";=\s]+)\s*=([^;\n]*)[\n\;]?/gs;
    const gb_reg5 = /[_a-zA-Z$][\w\$\.]*/s;
    const gb_reg6 = /(['"])?[_a-zA-Z$][\w\$\.]*(['"])?/gs;
+   const gb_reg7 = /\<\/?(if|else|for|switch|case|default)\s*(?:\.\s*=\s*("[^"]*?"|'[^']*?')?)?\s*\>/gsi;
+   const gb_reg8 = /\s*<[^<>]+(?:[^<>]*=(?:"[^"]*"|'[^']*'))*?\s*>\s*/gs;
+
+   const gb_reg9 = /\s*<([^<>"'=\s]+)(?:[^<>"'=]*(?:=("[^"]*"|'[^']*'))?)*?\s*>\s*/gs;
+
+   const gb_reg10 = /\s*<\/?([^<>"'=\s]+)(?:[^<>"'=]*(?:=(?:"[^"]*"|'[^']*'))?)*?\s*>\s*/gs;
 
    const gb_mutating_mth = new Set([
       // Array
@@ -32,6 +38,12 @@
       'clear', 'delete', 'set'
    ]);
 
+   const gb_parseto_template = new Set([
+      'for', 'if', 'else',
+      'switch', 'case', 'default',
+   ]);
+
+   const gb_template = 'template';
    const gb_onload = 'onload';
    const gb_onunload = 'onunload';
    const gb_onadopt = 'onadopt';
@@ -49,8 +61,10 @@
       return console.log.apply(gb_null, arguments);
    }
 
-   const getTypeLength = (a) => {
-      let t = getType(a).replace('Proxy', '');
+   const getTypeLength = (a, t) => {
+      if (!t) {
+         t = getType(a).replace('Proxy', '');
+      }
       switch (t) {
          case 'Map': return [t, a.size];
          case 'Set': return [t, a.size];
@@ -67,6 +81,7 @@
 
    const length = (a) => a.length;
 
+   const content = (a) => a.content;
    const childNodes = (a) => a.childNodes;
    const parentNode = (a) => a.parentNode;
 
@@ -155,13 +170,6 @@
 
    const addEvent = (a, b, c, d) => a.addEventListener(b, c, d);
 
-   const moveChilds = (a, b) => {
-      let c = childNodes(a);
-      while (length(c)) {
-         appendChild(b, c[0]);
-      }
-   };
-
    const removeOldNodes = (com0, com1) => {
       let c0 = nextSibling(com0);
       while (c0 && c0 !== com1) {
@@ -169,18 +177,6 @@
          c0 = nextSibling(c0);
          remove(c1);
       }
-   };
-
-   const childsCopyToArray = (a) => {
-      let b = [];
-      let c = childNodes(a);
-      if (!c) {
-         c = a;
-      }
-      for (let i = 0, l = length(c); i < l; i++) {
-         b[i] = c[i];
-      }
-      return b;
    };
 
    /**
@@ -288,380 +284,436 @@
    const parseNode = ($this, nodes, pcf, scope = true) => {
       let node = nodes[1];
       let name = nodeName(node);
-      if (nodeType(node) === 1) {
-         if (name === 'FOR') {
-            let asub = childNodes(node);
-            if (!length(asub)) {
-               remove(nodes[0]);
-               return;
-            }
-
-            let prop = getAttr(node, '.');
-            if (prop === gb_null) {
-               remove(nodes[0]);
-               return;
-            }
-
-            prop = slice(prop.split(/\s+/g).filter(v => v !== ''), 0, 3)
-               .map(v => `${gb_arg0}.a.${v}`);
-
-            if (length(prop) < 2) {
-               remove(nodes[0]);
-               return;
-            }
-
-            let com0 = cloneNode(gb_domcom);
-            let com1 = cloneNode(gb_domcom);
-
-            let conf = createNodeConf(com1, pcf);
-            conf.b[10] = prop;
-            conf.b[11] = nodes[0];
-            conf.b[12] = asub; // 必须是实时的 NodeList
-            conf.b[20] = com0;
-            conf.b[21] = com1;
-            conf.b[30] = scope;
-            conf.r = (cf) => {
-               setRecScope($this, cf);
-               let pm = cf.p.m;
-               if (nodeType(pm) === 8) {
-                  let pn = parentNode(pm);
-                  insertBefore(pn, cf.b[20], pm);
-                  insertBefore(pn, cf.b[21], pm);
-               } else {
-                  appendChild(pm, cf.b[20]);
-                  appendChild(pm, cf.b[21]);
-               }
-            };
-            conf.f = ($this, cf) => {
-               if (cf.b[30]) {
-                  cf.b[30] = false;
-                  setRecScope($this, cf);
-               }
-
-               cf.c = cf.c.filter(v => v !== gb_null);
-
-               let node = cf.b[11];
-               let subs = cf.b[12];
-               let com0 = cf.b[20];
-               let com1 = cf.b[21];
-
-               let lencfc = length(cf.c);
-               let lensub = length(subs);
-               let asub = childsCopyToArray(subs);
-
-               let str = slice(cf.b[10], 0);
-               let val = str.splice(-1)[0];
-               let [typ, len] = func(`${gb_code_use_strict}return\x20${gb_arg1}(${val});`)
-                  .call($this, cf, getTypeLength);
-
-               if (!cf.b[9]) {
-                  if (typ === 'Array') {
-                     str[0] = `${str[0]}=${val}[i];`;
-                     if (str[1]) {
-                        str[1] = `${str[1]}=i;`;
-                     }
-                     str = `for(let\x20i=0,l=${val}.length;i<l;i++){${str.join('')}`;
-                  } else if (typ === 'Object') {
-                     str[0] = `${str[0]}=${val}[k[i]];`;
-                     if (str[1]) {
-                        str[1] = `${str[1]}=k[i];`;
-                     }
-                     str = `let\x20k=Object.keys(${val});for(let\x20i=0,l=k.length;i<l;i++){${str.join('')}`;
-                  } else if (typ === 'Map') {
-                     str[0] = `${str[0]}=${val}.get(k);`;
-                     if (str[1]) {
-                        str[1] = `${str[1]}=k;`;
-                     }
-                     str = `let\x20i=-1;for(let\x20k\x20of\x20${val}.keys()){i++;${str.join('')}`;
-                  } else if (typ === 'Set') {
-                     str[0] = `${str[0]}=v;`;
-                     if (str[1]) {
-                        str[1] = `${str[1]}=i;`;
-                     }
-                     str = `let\x20i=-1;for(let\x20v\x20of\x20${val}.keys()){i++;${str.join('')}`;
-                  } else {
-                     remove(com0);
-                     remove(com1);
-                     remove(node);
-                     cf.p.c[indexOf(cf.p.c, cf)] = gb_null;
-                     return;
-                  }
-
-                  cf.b[9] =
-                     func(`${gb_code_use_strict}${str}${gb_arg1}(i)}`);
-               }
-
-               if (lencfc) {
-                  let lens = len * lensub;
-                  if (lencfc > lens) { // 存在 且 减少
-                     let dcf = cf.c.splice(lens);
-                     while (length(dcf)) {
-                        let df = pop(dcf);
-                        if (nodeType(df.m) === 8) {
-                           remove(df.b[20]);
-                           remove(df.b[21]);
-                        } else {
-                           remove(df.m);
-                        }
-                        for (let i = 0, l = length(df.c); i < l; i++) {
-                           push(dcf, df.c[i]);
-                        }
-                     }
-                  } else if (lencfc < lens) { // 存在 且 增多
-                     let j = (lens - lencfc) / lensub;
-                     while (j--) {
-                        for (let i = 0; i < lensub; i++) {
-                           parseNode($this, [subs[i], cloneNode(subs[i], true)], cf, false);
-                        }
-                     }
-                  }
-                  // 不减少 不增多 直接更新
-                  cf.b[9]
-                     .call($this, cf, (k) => {
-                        for (let i = 0; i < lensub; i++) {
-                           let kcf = cf.c[k * lensub + i];
-                           // 所有后代节点 使用一次作用域设置
-                           let arrcf = [kcf];
-                           while (length(arrcf)) {
-                              let conf = pop(arrcf);
-                              conf.b[30] = true;
-                              for (let i = 0, l = length(conf.c); i < l; i++) {
-                                 push(arrcf, conf.c[i]);
-                              }
+      let type = nodeType(node);
+      if (type === 1) {
+         if (name === 'TEMPLATE' && hasAttr(node, '@')) {
+            let tag = getAttr(node, '@');
+            if (tag === 'if' || tag === 'ifelse') {
+               if (tag === 'if') {
+                  let dom_a = nodes[0]; // 用真实 node  处理一遍
+                  let arrdelete = [];
+                  let domifelse = gb_null;
+                  while (dom_a) {
+                     let dom = dom_a;
+                     let typ = nodeType(dom);
+                     dom_a = nextSibling(dom_a);
+                     if (typ === 1) {
+                        let tag = getAttr(dom, '@');
+                        if (tag === 'if' || tag === 'else') {
+                           let l = length(arrdelete);
+                           while (l--) { remove(arrdelete[l]); }
+                           arrdelete = [];
+                           if (tag === 'if' && domifelse === gb_null) {
+                              domifelse = cloneNode($this.$cf.temp);
+                              setAttr(domifelse, '@', 'ifelse');
+                              insertBefore(parentNode(dom), domifelse, dom);
                            }
-                           callCfFun($this, kcf);
-                        }
-                     });
-               } else { // 初始 或 空
-                  cf.b[9]
-                     .call($this, cf, (k) => {
-                        parseChildNode($this, asub, cf, false);
-                     });
-               }
-            };
-            push(pcf.c, conf);
-            conf.r(conf);
-         } else if (name === 'SWITCH') {
-            let childlist = childNodes(node);
-            if (!length(childlist)) {
-               remove(nodes[0]);
-               return;
-            }
-
-            let prop = getAttr(node, '.');
-            if (prop === gb_null) {
-               remove(nodes[0]);
-               return;
-            }
-
-            let isbreak = hasAttr(node, gb_break) ? gb_break
-               : (hasAttr(node, gb_continue) ? gb_continue : '');
-
-            let arrsubs = [];
-            for (let i = 0, l = length(childlist); i < l; i++) {
-               let dom = childlist[i];
-               let nam = nodeName(dom);
-               if (nam === 'CASE' && !hasAttr(dom, '.')) {
-                  continue;
-               }
-               if (nam === 'CASE' || nam === 'DEFAULT') {
-                  let sbreak = hasAttr(dom, gb_break)
-                     ? gb_break : (hasAttr(dom, gb_continue)
-                        ? gb_continue : isbreak);
-                  let c = getAttr(dom, '.');
-                  if (c === gb_null) {
-                     c = '';
-                  }
-                  if (sbreak) {
-                     sbreak += ';';
-                  }
-                  push(arrsubs, {
-                     n: childsCopyToArray(dom),
-                     c: c,
-                     b: sbreak,
-                     m: toLowerCase(nam),
-                  });
-               }
-            }
-
-            if (!length(arrsubs)) {
-               remove(nodes[0]);
-               return;
-            }
-
-            let com0 = cloneNode(gb_domcom);
-            let com1 = cloneNode(gb_domcom);
-
-            let conf = createNodeConf(com1, pcf);
-            conf.b[10] = prop;
-            conf.b[11] = arrsubs;
-            conf.b[20] = com0;
-            conf.b[21] = com1;
-            conf.b[30] = scope;
-            conf.r = (cf) => {
-               setRecScope($this, cf);
-               let pm = cf.p.m;
-               if (nodeType(pm) === 8) {
-                  let pn = parentNode(pm);
-                  insertBefore(pn, cf.b[20], pm);
-                  insertBefore(pn, cf.b[21], pm);
-               } else {
-                  appendChild(pm, cf.b[20]);
-                  appendChild(pm, cf.b[21]);
-               }
-            };
-            conf.f = ($this, cf) => {
-               if (cf.b[30]) {
-                  cf.b[30] = false;
-                  setRecScope($this, cf);
-               }
-
-               let prop = cf.b[10];
-               let subs = cf.b[11];
-               let com0 = cf.b[20];
-               let com1 = cf.b[21];
-
-               if (!cf.b[9]) {
-                  let aks = keys(cf.a);
-                  let sexp = codeExpandConf(aks, 0);
-                  let loop = gb_reg3.test(cf.b[10])
-                     ? assignvalpdomrec(aks, 0) : '';
-
-                  let code = [];
-                  for (let i = 0, l = length(subs); i < l; i++) {
-                     let obj = subs[i];
-                     let lop = obj.b ? loop : (i + 1 === l ? loop : '');
-                     push(code, `${obj.m}\x20${obj.c}:${lop}${gb_arg1}(${i});${obj.b}`);
-                  }
-
-                  cf.b[9] =
-                     func(`${sexp}switch(${prop}){${code.join('')}}`);
-               }
-
-               removeOldNodes(com0, com1);
-
-               cf.b[9].call($this, cf, (k) => {
-                  parseChildNode($this, subs[k].n, cf, true);
-               });
-               // try {
-               //    removeOldNodes(com0, com1);
-
-               //    cf.b[9].call($this, cf, (k) => {
-               //       cf.b[40] = subs[k].c;
-               //       parseChildNode($this, subs[k].n, cf, true);
-               //    });
-               // } catch (e) {
-               //    throw new Error(cf.b[40]);
-               // }
-            };
-            push(pcf.c, conf);
-            conf.r(conf);
-         } else if (name === 'IFELSE') {
-            let arrsubs = [];
-            let childlist = childNodes(node);
-            for (let i = 0, l = length(childlist); i < l; i++) {
-               let dom = childlist[i];
-               let nam = nodeName(dom);
-               let isbreak = hasAttr(dom, gb_break) ? gb_break
-                  : (hasAttr(dom, gb_continue) ? gb_continue : '');
-               if (isbreak) {
-                  isbreak += ';';
-               }
-               push(arrsubs, {
-                  n: childsCopyToArray(dom),
-                  c: getAttr(dom, '.'),
-                  b: isbreak,
-                  m: toLowerCase(nam),
-               });
-            }
-
-            if (arrsubs[0].c === gb_null) {
-               remove(nodes[0]);
-               return;
-            }
-
-            let com0 = cloneNode(gb_domcom);
-            let com1 = cloneNode(gb_domcom);
-
-            let conf = createNodeConf(com1, pcf);
-            // conf.b[10] = arrsubs[0].c;
-            conf.b[11] = arrsubs;
-            conf.b[20] = com0;
-            conf.b[21] = com1;
-            conf.b[30] = scope;
-            conf.r = (cf) => {
-               setRecScope($this, cf);
-               let pm = cf.p.m;
-               if (nodeType(pm) === 8) {
-                  let pn = parentNode(pm);
-                  insertBefore(pn, cf.b[20], pm);
-                  insertBefore(pn, cf.b[21], pm);
-               } else {
-                  appendChild(pm, cf.b[20]);
-                  appendChild(pm, cf.b[21]);
-               }
-            };
-            conf.f = ($this, cf) => {
-               if (cf.b[30]) {
-                  cf.b[30] = false;
-                  setRecScope($this, cf);
-               }
-
-               // let prop = cf.b[10];
-               let subs = cf.b[11];
-               let com0 = cf.b[20];
-               let com1 = cf.b[21];
-
-               if (!cf.b[9]) {
-                  let aks = keys(cf.a);
-                  let sexp = codeExpandConf(aks, 0);
-
-                  let code = [];
-                  for (let i = 0, l = length(subs); i < l; i++) {
-                     let obj = subs[i];
-                     if (obj.c !== gb_null) {
-                        let loop = gb_reg3.test(obj.c)
-                           ? assignvalpdomrec(aks, 0) : '';
-                        let loopf = loop ? `||(function(){${loop}}).call(this,${gb_arg0})` : '';
-                        if (i === 0) {
-                           push(code, `${obj.m}(${obj.c}${loopf}){${loop}${gb_arg1}(${i});${obj.b}}`);
+                           appendChild(content(domifelse), dom);
                         } else {
-                           push(code, `${obj.m}\x20if(${obj.c}${loopf}){${loop}${gb_arg1}(${i});${obj.b}}`);
+                           push(arrdelete, dom);
                         }
                      } else {
-                        push(code, `${obj.m}{${gb_arg1}(${i});${obj.b}}`);
-                        subs.splice(i + 1);
+                        push(arrdelete, dom);
+                     }
+                     if (dom_a && nodeType(dom_a) === 1 && hasAttr(dom_a, 'if')) {
                         break;
                      }
                   }
-
-                  cf.b[9] =
-                     func(`${sexp}${code.join('')}`);
+                  nodes[0] = domifelse;
+                  nodes[1] = cloneNode(domifelse, true);
                }
 
-               removeOldNodes(com0, com1);
+               let lastchild = content(nodes[0]).lastChild;
+               // 真实 node 优化
+               let nodelist = childNodes(content(nodes[0]));
+               let ter = nodelist.values();
+               let obj, arrconf = [], arrdels = [];
+               while (!(obj = ter.next()).done) {
+                  let dom = obj.value;
+                  let tag = getAttr(dom, '@');
+                  let atr = getAttr(dom, '.');
+                  if (tag === 'if'
+                     || tag === 'else'
+                     && (atr || dom === lastchild)) {
+                     let isbreak = hasAttr(dom, gb_break) ? gb_break
+                        : (hasAttr(dom, gb_continue) ? gb_continue : '');
+                     if (isbreak) {
+                        isbreak += ';';
+                     }
+                     push(arrconf, {
+                        n: cloneNode(content(dom), true),
+                        c: atr ? atr : '',
+                        b: isbreak,
+                        m: tag === 'else' && atr ? 'else\x20if' : tag,
+                     });
+                  } else {
+                     push(arrdels, dom); // 真实 node 优化
+                  }
+               }
+               let l = length(arrdels);
+               while (l--) { remove(arrdels[l]); }
 
-               cf.b[9].call($this, cf, (k) => {
-                  parseChildNode($this, subs[k].n, cf, true);
-               });
-               // try {
-               //    removeOldNodes(com0, com1);
+               if (!arrconf[0].c) {
+                  remove(nodes[0]);
+                  return;
+               }
 
-               //    cf.b[9].call($this, cf, (k) => {
-               //       cf.b[40] = subs[k].c;
-               //       parseChildNode($this, subs[k].n, cf, true);
-               //    });
-               // } catch (e) {
-               //    throw new Error(cf.b[40]);
-               // }
-            };
-            push(pcf.c, conf);
-            conf.r(conf);
-         } else if (name !== 'ELSE') {
+               let com0 = cloneNode(gb_domcom);
+               let com1 = cloneNode(gb_domcom);
+
+               let conf = createNodeConf(com1, pcf);
+               // conf.b[10] = arrconf[0].c;
+               conf.b[11] = arrconf;
+               conf.b[20] = com0;
+               conf.b[21] = com1;
+               conf.b[30] = scope;
+               conf.r = (cf) => {
+                  setRecScope($this, cf);
+                  let pm = cf.p.m;
+                  if (nodeType(pm) === 8) {
+                     let pn = parentNode(pm);
+                     insertBefore(pn, cf.b[20], pm);
+                     insertBefore(pn, cf.b[21], pm);
+                  } else {
+                     appendChild(pm, cf.b[20]);
+                     appendChild(pm, cf.b[21]);
+                  }
+               };
+               conf.f = ($this, cf) => {
+                  if (cf.b[30]) {
+                     cf.b[30] = false;
+                     setRecScope($this, cf);
+                  }
+
+                  // let prop = cf.b[10];
+                  let arrconf = cf.b[11];
+                  let com0 = cf.b[20];
+                  let com1 = cf.b[21];
+
+                  if (!cf.b[9]) {
+                     let aks = keys(cf.a);
+                     let sexp = codeExpandConf(aks, 0);
+
+                     let code = [];
+                     for (let i = 0, l = length(arrconf); i < l; i++) {
+                        let obj = arrconf[i];
+                        if (obj.c) {
+                           let loop = gb_reg3.test(obj.c)
+                              ? assignvalpdomrec(aks, 0) : '';
+                           let loopf = loop ? `||(function(){${loop}}).call(this,${gb_arg0})` : '';
+                           push(code, `${obj.m}(${obj.c}${loopf}){${loop}${gb_arg1}(${i});${obj.b}}`);
+                        } else {
+                           push(code, `${obj.m}{${gb_arg1}(${i});${obj.b}}`);
+                           arrconf.splice(i + 1);
+                           break;
+                        }
+                     }
+
+                     cf.b[9] =
+                        func(`${sexp}${code.join('')}`);
+                  }
+
+                  removeOldNodes(com0, com1);
+
+                  cf.b[9].call($this, cf, (k) => {
+                     parseChildNode($this, childNodes(arrconf[k].n), cf, true);
+                  });
+                  // try {
+                  //    removeOldNodes(com0, com1);
+
+                  //    cf.b[9].call($this, cf, (k) => {
+                  //       cf.b[40] = subs[k].c;
+                  //       parseChildNode($this, subs[k].n, cf, true);
+                  //    });
+                  // } catch (e) {
+                  //    throw new Error(cf.b[40]);
+                  // }
+               };
+               push(pcf.c, conf);
+               conf.r(conf);
+            } else if (tag === 'for') {
+               let nodelist = childNodes(content(node));
+               if (!length(nodelist)) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               let prop = getAttr(node, '.');
+
+               if (prop === gb_null) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               prop = slice(prop.split(/\s+/g).filter(v => v !== ''), 0, 3);
+
+               if (length(prop) < 2) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               let com0 = cloneNode(gb_domcom);
+               let com1 = cloneNode(gb_domcom);
+
+               let conf = createNodeConf(com1, pcf);
+               conf.b[10] = prop;
+               conf.b[11] = nodes[0];
+               conf.b[12] = nodelist; // 类型必须是实时的 NodeList
+               conf.b[20] = com0;
+               conf.b[21] = com1;
+               conf.b[30] = scope;
+               conf.r = (cf) => {
+                  setRecScope($this, cf);
+                  let pm = cf.p.m;
+                  if (nodeType(pm) === 8) {
+                     let pn = parentNode(pm);
+                     insertBefore(pn, cf.b[20], pm);
+                     insertBefore(pn, cf.b[21], pm);
+                  } else {
+                     appendChild(pm, cf.b[20]);
+                     appendChild(pm, cf.b[21]);
+                  }
+               };
+               conf.f = ($this, cf) => {
+                  if (cf.b[30]) {
+                     cf.b[30] = false;
+                     setRecScope($this, cf);
+                  }
+
+                  cf.c = cf.c.filter(v => v !== gb_null);
+
+                  let node = cf.b[11];
+                  let nodelist = cf.b[12];
+                  let com0 = cf.b[20];
+                  let com1 = cf.b[21];
+
+                  let lencfc = length(cf.c);
+                  let lensub = length(nodelist);
+
+                  let str = slice(cf.b[10], 0);
+                  let val = str.splice(-1)[0];
+
+                  let aks = keys(cf.a);
+                  let sexp = codeExpandConf(aks, 0);
+
+                  let str0 = `Object.assign(${gb_arg0}.a,{${str.join(',')}});`;
+
+                  cf.b[13] = func(`${sexp}return\x20${val};`)
+                     .call($this, cf);
+                  cf.b[14] = getTypeLength(cf.b[13]);
+
+                  if (!cf.b[9]) {
+                     let typ = cf.b[14][0];
+
+                     if (typ === 'Array') {
+                        str[0] = `${str[0]}=${val}[i]`;
+                        if (str[1]) {
+                           str[1] = `${str[1]}=i`;
+                        }
+                        str = `for(let\x20i=0,l=${val}.length;i<l;i++){let\x20${str.join(',')};${str0}`;
+                     } else if (typ === 'Object') {
+                        str[0] = `${str[0]}=${val}[k[i]]`;
+                        if (str[1]) {
+                           str[1] = `${str[1]}=k[i]`;
+                        }
+                        str = `let\x20k=Object.keys(${val});for(let\x20i=0,l=k.length;i<l;i++){let\x20${str.join(',')};${str0}`;
+                     } else if (typ === 'Map') {
+                        str[0] = `${str[0]}=${val}.get(k)`;
+                        if (str[1]) {
+                           str[1] = `${str[1]}=k`;
+                        }
+                        str = `let\x20i=-1;for(let\x20k\x20of\x20${val}.keys()){i++;let\x20${str.join(',')};${str0}`;
+                     } else if (typ === 'Set') {
+                        str[0] = `${str[0]}=v`;
+                        if (str[1]) {
+                           str[1] = `${str[1]}=i`;
+                        }
+                        str = `let\x20i=-1;for(let\x20v\x20of\x20${val}.keys()){i++;let\x20${str.join(',')};${str0}`;
+                     } else {
+                        remove(com0);
+                        remove(com1);
+                        remove(node);
+                        cf.p.c[indexOf(cf.p.c, cf)] = gb_null;
+                        return;
+                     }
+
+                     cf.b[9] =
+                        func(`${sexp}${str}${gb_arg1}(i)}`);
+                  }
+
+                  if (lencfc) {
+                     let lens = cf.b[14][1] * lensub;
+                     if (lencfc > lens) { // 存在 且 减少
+                        let dcf = cf.c.splice(lens);
+                        while (length(dcf)) {
+                           let df = pop(dcf);
+                           if (nodeType(df.m) === 8) {
+                              remove(df.b[20]);
+                              remove(df.b[21]);
+                           } else {
+                              remove(df.m);
+                           }
+                           for (let i = 0, l = length(df.c); i < l; i++) {
+                              push(dcf, df.c[i]);
+                           }
+                        }
+                     } else if (lencfc < lens) { // 存在 且 增多
+                        let j = (lens - lencfc) / lensub;
+                        while (j--) {
+                           // 无需 作用域设置
+                           parseChildNode($this, nodelist, cf, false);
+                        }
+                     }
+                     // 不减少 不增多 直接更新
+                     cf.b[9]
+                        .call($this, cf, (k) => {
+                           for (let i = 0; i < lensub; i++) {
+                              let kcf = cf.c[k * lensub + i];
+                              // 所有后代节点 使用一次作用域设置
+                              let arrcf = [kcf];
+                              while (length(arrcf)) {
+                                 let conf = pop(arrcf);
+                                 conf.b[30] = true;
+                                 // 属性操作 也要 使用一次作用域设置
+                                 let ld = length(conf.d);
+                                 while (ld--) {
+                                    conf.d[ld].b[30] = true;
+                                 }
+                                 for (let i = 0, l = length(conf.c); i < l; i++) {
+                                    push(arrcf, conf.c[i]);
+                                 }
+                              }
+                              callCfFun($this, kcf);
+                           }
+                        });
+                  } else { // 初始 或 空
+                     cf.b[9]
+                        .call($this, cf, (k) => {
+                           parseChildNode($this, nodelist, cf, false);
+                        });
+                  }
+               };
+               push(pcf.c, conf);
+               conf.r(conf);
+            } else if (tag === 'switch') {
+
+               let prop = getAttr(node, '.');
+               if (prop === gb_null) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               let isbreak = hasAttr(node, gb_break) ? gb_break
+                  : (hasAttr(node, gb_continue) ? gb_continue : '');
+
+               // 真实 node 优化
+               let nodelist = childNodes(content(nodes[0]));
+               let ter = nodelist.values();
+               let obj, arrconf = [], arrdels = [];
+               while (!(obj = ter.next()).done) {
+                  let dom = obj.value;
+                  let tag = getAttr(dom, '@');
+                  let atr = getAttr(dom, '.');
+                  if (tag === 'default'
+                     || tag === 'case' && atr
+                  ) {
+                     let sbreak = hasAttr(dom, gb_break)
+                        ? gb_break : (hasAttr(dom, gb_continue)
+                           ? gb_continue : isbreak);
+                     if (sbreak) {
+                        sbreak += ';';
+                     }
+                     push(arrconf, {
+                        n: cloneNode(content(dom), true),
+                        c: atr ? atr : '',
+                        b: sbreak,
+                        m: tag === 'else' && atr ? 'else\x20if' : tag,
+                     });
+                  } else {
+                     push(arrdels, dom); // 真实 node 优化
+                  }
+               }
+               let l = length(arrdels);
+               while (l--) { remove(arrdels[l]); }
+
+               if (!arrconf[0].c) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               let com0 = cloneNode(gb_domcom);
+               let com1 = cloneNode(gb_domcom);
+
+               let conf = createNodeConf(com1, pcf);
+               conf.b[10] = prop;
+               conf.b[11] = arrconf;
+               conf.b[20] = com0;
+               conf.b[21] = com1;
+               conf.b[30] = scope;
+               conf.r = (cf) => {
+                  setRecScope($this, cf);
+                  let pm = cf.p.m;
+                  if (nodeType(pm) === 8) {
+                     let pn = parentNode(pm);
+                     insertBefore(pn, cf.b[20], pm);
+                     insertBefore(pn, cf.b[21], pm);
+                  } else {
+                     appendChild(pm, cf.b[20]);
+                     appendChild(pm, cf.b[21]);
+                  }
+               };
+               conf.f = ($this, cf) => {
+                  if (cf.b[30]) {
+                     cf.b[30] = false;
+                     setRecScope($this, cf);
+                  }
+
+                  let prop = cf.b[10];
+                  let arrconf = cf.b[11];
+                  let com0 = cf.b[20];
+                  let com1 = cf.b[21];
+
+                  if (!cf.b[9]) {
+                     let aks = keys(cf.a);
+                     let sexp = codeExpandConf(aks, 0);
+                     let loop = gb_reg3.test(cf.b[10])
+                        ? assignvalpdomrec(aks, 0) : '';
+
+                     let code = [];
+                     for (let i = 0, l = length(arrconf); i < l; i++) {
+                        let obj = arrconf[i];
+                        let lop = obj.b ? loop : (i + 1 === l ? loop : '');
+                        push(code, `${obj.m}\x20${obj.c}:${lop}${gb_arg1}(${i});${obj.b}`);
+                     }
+
+                     cf.b[9] =
+                        func(`${sexp}switch(${prop}){${code.join('')}}`);
+                  }
+
+                  removeOldNodes(com0, com1);
+
+                  cf.b[9].call($this, cf, (k) => {
+                     parseChildNode($this, childNodes(arrconf[k].n), cf, true);
+                  });
+                  // try {
+                  //    removeOldNodes(com0, com1);
+
+                  //    cf.b[9].call($this, cf, (k) => {
+                  //       cf.b[40] = subs[k].c;
+                  //       parseChildNode($this, subs[k].n, cf, true);
+                  //    });
+                  // } catch (e) {
+                  //    throw new Error(cf.b[40]);
+                  // }
+               };
+               push(pcf.c, conf);
+               conf.r(conf);
+            }
+         } else {
             let bind = getAttrDel(node, '#');
             let prop = getAttrDel(node, '.');
             let attr = getAttrDel(node, '..');
-            let asub = childsCopyToArray(node);
+            let nodelist = childNodes(cloneNode(node, true));
 
             let conf = createNodeConf(node, pcf);
             conf.b[10] = bind;
@@ -715,9 +767,9 @@
                   scf.b[10] = arr[2];
                   scf.b[11] = iterarr[i].x(arr[1], arr[2]);
                   scf.b[30] = scope;
-                  // scf.r = (cf) => {
-                  //    setRecScope($this, cf);
-                  // };
+                  scf.r = (cf) => {
+                     setRecScope($this, cf);
+                  };
                   scf.f = ($this, cf) => {
                      if (cf.b[30]) {
                         cf.b[30] = false;
@@ -729,6 +781,7 @@
                         let sexp = codeExpandConf(aks, 0);
                         let loop = gb_reg3.test(cf.b[10])
                            ? assignvalpdomrec(aks, 0) : '';
+
                         cf.b[9] =
                            func(`${sexp}${gb_arg0}.m.${cf.b[11]};${loop}`);
                      }
@@ -741,14 +794,14 @@
                      // }
                   };
                   push(conf.d, scf);
-                  // scf.r(scf);
+                  scf.r(scf);
                }
             }
 
             // 解析子节点
-            parseChildNode($this, asub, conf, scope);
+            parseChildNode($this, nodelist, conf, scope);
          }
-      } else if (name === gb_name_domtxt) {
+      } else if (type === 3) {
          let val = trim(node.nodeValue);
          let arr = [];
          let len;
@@ -775,7 +828,7 @@
          while (len--) {
             let six = len + 1;
             if (trim(slice(arr[len], 2, -1))) {
-               let conf = createNodeConf(createTextNode(''), pcf);
+               let conf = createNodeConf(createTextNode('1'), pcf);
                conf.b[10] = arr[len];
                conf.b[11] = gb_arg0 + '.m.nodeValue';
                conf.b[12] = `\`${arr[len]}\``;
@@ -832,13 +885,14 @@
    /**
     * 
     * @param {HTMLElement} $this 
-    * @param {Array} subs 
+    * @param {Nodelist} nodelist
     * @param {Object} pcf
     * @param {Boolean} scope
     */
-   const parseChildNode = ($this, subs, pcf, scope = true) => {
-      for (let i = 0, l = length(subs); i < l; i++) {
-         let dom = subs[i];
+   const parseChildNode = ($this, nodelist, pcf, scope = true) => {
+      let ter = nodelist.values(), obj;
+      while (!(obj = ter.next()).done) {
+         let dom = obj.value;
          parseNode($this, [dom, cloneNode(dom, true)], pcf, scope);
       }
    };
@@ -947,7 +1001,7 @@
    };
 
    const parseTemplate = ($this) => {
-      const domfratop = cloneNode($this.$cf.temp.content, true)
+      const domfratop = cloneNode(content($this.$cf.temp), true)
          , arr_ps_all = []
          , arr_ps_jsi = [];
 
@@ -960,35 +1014,6 @@
          arr_ps_jsi
       );
 
-      let list = domQueryAll(domfratop, 'if');
-      for (let i = 0, l = length(list); i < l; i++) {
-         if (nodeName(parentNode(list[i])) !== 'IFELSE') {
-            let dom_a = list[i];
-            let arrdelete = [];
-            let domifelse = gb_null;
-            while (dom_a) {
-               let dom = dom_a;
-               let nmb = nodeName(dom);
-               dom_a = nextSibling(dom_a);
-               if (nmb === 'IF' || nmb === 'ELSE') {
-                  while (length(arrdelete)) {
-                     remove(pop(arrdelete));
-                  }
-                  if (nmb === 'IF' && domifelse === gb_null) {
-                     domifelse = createElement('ifelse');
-                     insertBefore(parentNode(dom), domifelse, dom);
-                  }
-                  appendChild(domifelse, dom);
-               } else {
-                  push(arrdelete, dom);
-               }
-               if (dom_a && nodeName(dom_a) === 'IF') {
-                  break;
-               }
-            }
-         }
-      }
-
       let scope = true;
       let conf = createNodeConf($this.$sd);
       conf.b[30] = scope;
@@ -998,7 +1023,7 @@
             setRecScope($this, cf);
          }
       };
-      parseChildNode($this, childsCopyToArray(domfratop), conf, scope);
+      parseChildNode($this, childNodes(domfratop), conf, scope);
 
       Promise.allSettled(arr_ps_all).then(list => {
          for (let i = length(list) - 1; i >= 0; i--) {
@@ -1069,18 +1094,23 @@
          const name = getAttr(domtemp, attr);
          domtemp.replaceWith(createElement(name));
 
-         defineElementClass(location, name, domtemp, false);
+         defineElementClass(
+            location,
+            name,
+            domtemp,
+            false
+         );
       }
    };
 
    const fetchComponentGen = (doc) => {
-      let nodelist = domQueryAll(doc, gb_selector), i = length(nodelist);
+      let querylist = domQueryAll(doc, gb_selector), i = length(querylist);
       if (i) {
          // 倒序 先注册的覆盖后注册的
          const domjson = {};
          while (i--) {
-            let k = toLowerCase(nodeName(nodelist[i]));
-            domjson[k] = nodelist[i];
+            let k = toLowerCase(nodeName(querylist[i]));
+            domjson[k] = querylist[i];
          }
          const arrkey = keys(domjson);
          for (let i = 0, l = length(arrkey); i < l; i++) {
@@ -1098,10 +1128,27 @@
                   if (customElements.get(name) !== gb_undf) {
                      return gb_null;
                   }
-                  const domtemp = createElement('template');
-                  domtemp.innerHTML = res.txt;
+                  const domtemp = createElement(gb_template);
 
-                  defineElementClass(new URL(res.url), name, domtemp, true);
+                  domtemp.innerHTML = res.txt
+                     .replace(gb_reg10, (s, s1) => {
+                        s = trim(s);
+                        if (gb_parseto_template.has(s1)) {
+                           if (indexOf(s, '</') === 0) {
+                              return `</${gb_template}>`;
+                           }
+                           s = s.substring(length(s1) + 1);
+                           return `<${gb_template}\x20@='${s1}'${s}`;
+                        }
+                        return s;
+                     });
+
+                  defineElementClass(
+                     new URL(res.url),
+                     name,
+                     domtemp,
+                     true
+                  );
                });
             }
          }

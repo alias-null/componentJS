@@ -1,0 +1,22 @@
+<script>
+   const { val, called } = this;
+   var param = val(new Set(['a', 'b', 'c',]));
+
+   setTimeout(() => {
+      param.val.add('d');
+      param.val.add('e');
+      param.val.add('f');
+   }, 1000);
+
+   setTimeout(() => {
+      param.val = new Set(['g', 'h', 'i',]);
+   }, 2000);
+
+   return {
+      param,
+   };
+</script>
+
+<for .="vv1 kk1 param.val">
+   <h4 .="id=vv1;">${kk1} => ${vv1}</h4>
+</for>

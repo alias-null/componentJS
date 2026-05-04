@@ -1,0 +1,30 @@
+<script>
+   const { val, called } = this;
+   var param = val(new Map([
+      ['a', 1],
+      ['b', 2],
+      ['c', 3],
+   ]));
+
+   setTimeout(() => {
+      param.val.set('d', 4);
+      param.val.set('e', 5);
+      param.val.set('f', 6);
+   }, 1000);
+
+   setTimeout(() => {
+      param.val = new Map([
+         ['g', 7],
+         ['h', 8],
+         ['i', 9],
+      ]);
+   }, 2000);
+
+   return {
+      param,
+   };
+</script>
+
+<for .="vv1 kk1 param.val">
+   <h4 .="id=vv1;">${kk1} => ${vv1}</h4>
+</for>

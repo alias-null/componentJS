@@ -17,24 +17,24 @@
 <!-- if else 之间为无效 将被删除 -->
 <for .="val param.val">
    <if .="val==0">
-      <div .="innerText=`if-1-${val}`;style.border='2px solid blue'"></div>
+      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid blue`"></div>
    </if>
    123123
    123123
    <h1>123123</h1>
    <else .="val==1">
-      <div .="innerText=`if-1-${val}`;style.border='2px solid green'"></div>
+      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid green`"></div>
    </else>
    123123
    123123
    <h1>123123</h1>
    <else .="val==2">
-      <div .="innerText=`if-1-${val}`;style.border='2px solid yellow'"></div>
+      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid yellow`"></div>
    </else>
    123123
    123123
    <h1>123123</h1>
    <else>
-      <div .="innerText=`if-1-${val}`;style.border='2px solid red'"></div>
+      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid red`"></div>
    </else>
 </for>

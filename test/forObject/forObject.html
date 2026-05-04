@@ -1,0 +1,23 @@
+<script>
+   const { val, called } = this;
+   var param = val([{ a: 1, b: 2, c: 3 }, { d: 4, e: 5, f: 6 },]);
+
+   setTimeout(() => {
+      param.val = [{ g: 7, h: 8, i: 9 }, { j: 10, k: 11, l: 12 }, { m: 13, n: 14, o: 15 },];
+   }, 1000);
+
+   setTimeout(() => {
+      param.val = [{ p: 16, q: 17, r: 18 },];
+   }, 2000);
+
+   return {
+      param,
+   };
+</script>
+
+<for .="vv1 it1 param.val">
+   <h4 .="style.border=`${it1}px solid blue`" ..="id=it1">${it1} => ${vv1}</h4>
+   <for .="vv2 it2 vv1">
+      <h4 .="style.border='2px solid red'">====== ${it2} => ${vv2}</h4>
+   </for>
+</for>
