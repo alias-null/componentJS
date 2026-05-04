@@ -1287,7 +1287,7 @@
    // 文档加载完成
    addEvent(window, 'DOMContentLoaded', () => {
       fetchComponentGen(document);
-      parseTemplateComponent(document);
+      // parseTemplateComponent(document);
    }, gb_event_once_conf);
 
    class CP extends HTMLElement {
