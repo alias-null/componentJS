@@ -1,11 +1,11 @@
 <script>
    const { val, called } = this;
-   var param = val([]);
+   var param = val(0);
 
    setInterval(() => {
-      param.val.push(param.val.length);
-      if (param.val.length > 4) {
-         param.val.length = 0;
+      param.val++;
+      if (param.val > 4) {
+         param.val = 0;
       }
    }, 1000);
 
@@ -15,26 +15,30 @@
 </script>
 
 <!-- if else 之间为无效 将被删除 -->
-<for .="val param.val">
-   <if .="val==0">
-      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid blue`"></div>
-   </if>
-   123123
-   123123
-   <h1>123123</h1>
-   <else .="val==1">
-      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid green`"></div>
-   </else>
-   123123
-   123123
-   <h1>123123</h1>
-   <else .="val==2">
-      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid yellow`"></div>
-   </else>
-   123123
-   123123
-   <h1>123123</h1>
-   <else>
-      <div .="innerText=`if-1-${val}`;style.border=`${val+3}px solid red`"></div>
-   </else>
-</for>
+<if .="param.val==0">
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid blue`"></div>
+</if>
+123123
+123123
+<h1>123123</h1>
+<else .="param.val==1">
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid green`"></div>
+</else>
+123123
+123123
+<h1>123123</h1>
+<else .="param.val==2">
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid yellow`"></div>
+</else>
+123123
+123123
+<h1>123123</h1>
+<else .="param.val==3">
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid orchid`"></div>
+</else>
+123123
+123123
+<h1>123123</h1>
+<else>
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid red`"></div>
+</else>
