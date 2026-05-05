@@ -42,6 +42,7 @@ import {
    hasAttribute,
    removeAttribute,
    setAttribute,
+   getAttributeRemove,
 } from "./utils/object.js";
 
 
@@ -133,10 +134,6 @@ import {
 
    const func = (a) => Function(a);
 
-   const objToString = Object.prototype.toString;
-
-   const getType = (a) => slice(objToString.call(a), 8, -1);
-
    const isArr = (a) => Array.isArray(a);
    const isMap = (a) => getType(a) === 'Map';
    const isSet = (a) => getType(a) === 'Set';
@@ -157,12 +154,6 @@ import {
          reject(a);
       }, gb_event_once_conf);
    });
-
-   const getAttrDel = (a, b) => {
-      let s = a.getAttribute(b);
-      a.removeAttribute(b);
-      return s;
-   };
 
    const domQueryAll = (a, b) => a.querySelectorAll(b);
 
@@ -708,9 +699,9 @@ import {
                conf.r(conf);
             }
          } else {
-            let bind = getAttrDel(node, '#');
-            let prop = getAttrDel(node, '.');
-            let attr = getAttrDel(node, '..');
+            let bind = getAttributeRemove(node, '#');
+            let prop = getAttributeRemove(node, '.');
+            let attr = getAttributeRemove(node, '..');
             let nodelist = childNodes(cloneNode(node, true));
 
             let conf = createNodeConf(node, pcf);

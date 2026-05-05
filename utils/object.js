@@ -42,3 +42,8 @@ export const getAttribute = (a, b) => a.getAttribute(b);
 export const hasAttribute = (a, b) => a.hasAttribute(b);
 export const removeAttribute = (a, b) => a.removeAttribute(b);
 export const setAttribute = (a, b, c) => a.setAttribute(b, c);
+export const getAttributeRemove = (a, b) => {
+   let s = a.getAttribute(b);
+   a.removeAttribute(b);
+   return s;
+};
