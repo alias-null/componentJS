@@ -13,7 +13,6 @@ import {
    trim,
    pop,
    push,
-   remove,
    toLowerCase,
    toUpperCase,
    indexOf,
@@ -33,6 +32,7 @@ import {
    nextSibling,
    previousSibling,
    textContentSet,
+   remove,
    cloneNode,
    appendChild,
    insertBefore,
@@ -42,6 +42,8 @@ import {
    hasAttribute,
    removeAttribute,
    setAttribute,
+   querySelector,
+   querySelectorAll,
    getAttributeRemove,
 } from "./utils/object.js";
 
@@ -154,8 +156,6 @@ import {
          reject(a);
       }, gb_event_once_conf);
    });
-
-   const domQueryAll = (a, b) => a.querySelectorAll(b);
 
    const addEvent = (a, b, c, d) => a.addEventListener(b, c, d);
 
@@ -1062,22 +1062,22 @@ import {
     * @param {Boolean} sethref 是否设置 href 到配置中
     */
    const defineElementClass = (objurl, tagname, domtemp, sethref = true) => {
-      const CPsub = class extends CP { }
+      const Component = class extends CusElement { }
          , orig = objurl.origin
          , file = objurl.pathname.replace(/[\/]+/g, '/');
-      CPsub.$cf = {
+      Component.$cf = {
          base: orig + slice(file, 0, file.lastIndexOf('/') + 1),
          href: sethref ? (orig + file) : gb_undf,
          attr: gb_attrname,
          name: tagname,
          temp: domtemp,
       };
-      customElements.define(tagname, CPsub);
+      customElements.define(tagname, Component);
    };
 
    const parseTemplateComponent = (doc) => {
       let attr = 'component';
-      let domlist = domQueryAll(doc, `[${attr}*="-"]`);
+      let domlist = querySelectorAll(doc, `[${attr}*="-"]`);
       for (let i = 0, l = length(domlist); i < l; i++) {
          const domtemp = domlist[i];
          const name = getAttribute(domtemp, attr);
@@ -1093,7 +1093,7 @@ import {
    };
 
    const fetchComponentGen = (doc) => {
-      let querylist = domQueryAll(doc, gb_selector), i = length(querylist);
+      let querylist = querySelectorAll(doc, gb_selector), i = length(querylist);
       if (i) {
          // 倒序 先注册的覆盖后注册的
          const domjson = {};
@@ -1279,7 +1279,7 @@ import {
       // parseTemplateComponent(document);
    }, gb_event_once_conf);
 
-   class CP extends HTMLElement {
+   class CusElement extends HTMLElement {
       $cf = {};
       $vd = {};
       $fp = new WeakMap();
