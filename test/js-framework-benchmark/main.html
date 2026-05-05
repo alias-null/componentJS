@@ -1,0 +1,149 @@
+<link href="./css/currentStyle.css" rel="stylesheet" />
+
+<div id="main">
+   <div class="container">
+      <div class="jumbotron">
+         <div class="row">
+            <div class="col-md-6">
+               <h1>componentJS (keyed)</h1>
+            </div>
+            <div class="col-md-6">
+               <div class="row">
+                  <div class="col-sm-6 smallpad">
+                     <button type="button" class="btn btn-primary btn-block" id="run" .="onclick=()=>run()">
+                        Create 1,000 rows
+                     </button>
+                  </div>
+                  <div class="col-sm-6 smallpad">
+                     <button type="button" class="btn btn-primary btn-block" id="runlots" .="onclick=()=>runLots()">
+                        Create 10,000 rows
+                     </button>
+                  </div>
+                  <div class="col-sm-6 smallpad">
+                     <button type="button" class="btn btn-primary btn-block" id="add" .="onclick=()=>add()">
+                        Append 1,000 rows
+                     </button>
+                  </div>
+                  <div class="col-sm-6 smallpad">
+                     <button type="button" class="btn btn-primary btn-block" id="update" .="onclick=()=>update()">
+                        Update every 10th row
+                     </button>
+                  </div>
+                  <div class="col-sm-6 smallpad">
+                     <button type="button" class="btn btn-primary btn-block" id="clear" .="onclick=()=>clear()">
+                        Clear
+                     </button>
+                  </div>
+                  <div class="col-sm-6 smallpad">
+                     <button type="button" class="btn btn-primary btn-block" id="swaprows" .="onclick=()=>swapRows()">
+                        Swap Rows
+                     </button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <table class="table table-hover table-striped test-data">
+         <tbody>
+            <for .="row rows.val">
+               <tr .="class=row.id === selected.val ? 'danger' : ''" ..="data-label=row.label">
+                  <td class="col-md-1">${row.id}</td>
+                  <td class="col-md-4">
+                     <a .="onclick=()=> select(row.id)">${row.label}</a>
+                  </td>
+                  <td class="col-md-1">
+                     <a .="onclick=()=> remove(row.id)">
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                     </a>
+                  </td>
+                  <td class="col-md-6"></td>
+               </tr>
+            </for>
+         </tbody>
+      </table>
+      <span class="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
+   </div>
+</div>
+
+<script>
+   const { val } = this;
+
+   const adjectives = ["pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain", "quaint", "clean", "elegant", "easy", "angry", "crazy", "helpful", "mushy", "odd", "unsightly", "adorable", "important", "inexpensive", "cheap", "expensive", "fancy"],
+      colours = ["red", "yellow", "blue", "green", "pink", "brown", "purple", "brown", "white", "black", "orange"],
+      nouns = ["table", "chair", "house", "bbq", "desk", "car", "pony", "cookie", "sandwich", "burger", "pizza", "mouse", "keyboard"];
+
+   function _random(max) { return Math.round(Math.random() * 1000) % max; };
+
+   let idnum = 1;
+   function buildData(count) {
+      let data = new Array(count);
+      for (let i = 0; i < count; i++) {
+         data[i] = {
+            id: idnum++,
+            label: `${adjectives[_random(adjectives.length)]}\x20${colours[_random(colours.length)]}\x20${nouns[_random(nouns.length)]}`
+         };
+      }
+      return data;
+   }
+
+   const rows = val([]);
+   const selected = val(null);
+
+
+   function add() {
+      rows.val = rows.val.concat(buildData(1000));
+   }
+
+   function remove(id) {
+      rows.val.splice(
+         rows.val.findIndex((d) => d.id === id),
+         1
+      );
+   }
+
+   function select(id) {
+      selected.val = id;
+   }
+
+   function run() {
+      rows.val = buildData(1000);
+   }
+
+   function runLots() {
+      rows.val = buildData(10000);
+   }
+
+   function update() {
+      for (let i = 0, l = rows.val.length; i < l; i += 10) {
+         rows.val[i].label += ' !!!';
+      }
+   }
+
+   function clear() {
+      rows.val = [];
+      selected.val = null;
+   }
+
+   function swapRows() {
+      if (rows.val.length > 998) {
+         const d1 = rows.val[1];
+         const d998 = rows.val[998];
+         rows.val[1] = d998;
+         rows.val[998] = d1;
+      }
+   }
+
+
+   return {
+      selected,
+      rows,
+      add,
+      remove,
+      select,
+      run,
+      runLots,
+      update,
+      clear,
+      swapRows,
+   }
+</script>
