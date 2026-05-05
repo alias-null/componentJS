@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Document</title>
+   <style>
+      * {
+         box-sizing: border-box;
+      }
+
+      html,
+      body {
+         width: 100%;
+         height: 100%;
+         margin: 0;
+      }
+
+      #div {
+         display: flex;
+         flex-direction: column;
+         border: 1px solid blue;
+         width: 100vw;
+         height: 100vh;
+         overflow: auto;
+         padding: 5px 0;
+      }
+
+      p {
+         display: flex;
+         border: 1px solid green;
+         margin: 0 0 5px 0;
+      }
+   </style>
+   <script>
+      document.addEventListener('readystatechange', () => {
+         if (document.readyState === 'loading') { // 加载中
+
+         } else if (document.readyState === 'complete') { // 完成
+            console.log('stateComplete>>', performance.now() - time_start);
+         } else if (document.readyState === 'interactive') { // 可交互
+
+         }
+      });
+   </script>
+</head>
+
+<body>
+   <div id="div">
+      <p>段落</p>
+   </div>
+   <script>
+      var time_start;
+      const dom_div = document.getElementById('div');
+      const dom_clone_p = dom_div.children[0].cloneNode(true);
+      dom_div.innerHTML = '';
+
+      function callObjectAssign0(num) {
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               Object.assign([], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            }
+         });
+      }
+
+      function callObjectAssign1(num) {
+         let i = num;
+         callTime(() => {
+            const obj = (a) => Object[a];
+            const assign = (a, b) => obj('assign')(a, b);
+            while (i--) {
+               assign([], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            }
+         });
+      }
+
+      function callObjectAssign2(num) {
+         let i = num;
+         callTime(() => {
+            const assign = (a, b) => Object.assign(a, b);
+            while (i--) {
+               assign([], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            }
+         });
+      }
+
+      function createTextNode(num) {
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               document.createTextNode('');
+            }
+         });
+      }
+
+      function createTextNodeClone(num) {
+         let i = num;
+         callTime(() => {
+            let textNode = document.createTextNode('');
+            while (i--) {
+               textNode.cloneNode();
+               textNode.innerHTML = '';
+            }
+         });
+      }
+
+      function loopDomfraAppendChild(num) {
+         const domfra = document.createDocumentFragment();
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               domfra.appendChild(dom_clone_p.cloneNode(true));
+            }
+            dom_div.appendChild(domfra);
+         });
+      }
+
+      function loopAppendChild(num) {
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               dom_div.appendChild(dom_clone_p.cloneNode(true));
+            }
+         });
+      }
+
+      function innerHTMLEmpty(num) {
+         let i = num;
+         while (i--) {
+            dom_div.appendChild(dom_clone_p.cloneNode(true));
+         }
+         callTime(() => {
+            dom_div.innerHTML = '';
+         });
+      }
+
+      function textContentEmpty(num) {
+         let i = num;
+         while (i--) {
+            dom_div.appendChild(dom_clone_p.cloneNode(true));
+         }
+         callTime(() => {
+            dom_div.textContent = '';
+         });
+      }
+
+      function vsArray(num) {
+         let data = [];
+         let i = num;
+         let j = -1;
+         while (i--) {
+            j++;
+            data[i] = j;
+         }
+         callTime(() => {
+            for (let i = 0, l = data.length; i < l; i++) {
+            }
+         });
+      }
+
+      function vsMap(num) {
+         let data = new Map();
+         let i = num;
+         let j = -1;
+         while (i--) {
+            j++;
+            data.set(j, j);
+         }
+         callTime(() => {
+            for (let i of data.keys()) {
+            }
+         });
+      }
+
+
+
+      function callTime(call, write = false) {
+         time_start = performance.now();
+         call();
+         let time = performance.now() - time_start;
+         document.body.insertAdjacentHTML('afterbegin', `<h1>${time}</h1><br>`);
+         console.log('callTime>>', time);
+      }
+
+      function insertBefore(num) {
+         let name = 'insertBefore';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = document.createElement('p');
+
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               domdiv.insertBefore(
+                  domp1.cloneNode(),
+                  null
+               );
+            }
+         });
+      }
+
+      function appendChild(num) {
+         let name = 'appendChild';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = document.createElement('p');
+
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               domdiv.appendChild(domp1.cloneNode());
+            }
+         });
+      }
+
+      function before(num) {
+         let name = 'before';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = document.createElement('p');
+
+         let i = num;
+         callTime(() => {
+            let domp0 = domp1.cloneNode();
+            domdiv.appendChild(domp0);
+            i--;
+            while (i--) {
+               domp0.before(domp1.cloneNode());
+            }
+         });
+      }
+
+      function insertAdjacentHTML(num) {
+         let name = 'insertAdjacentHTML';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = '<p></p>';
+
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               domdiv.insertAdjacentHTML(
+                  'beforeend',
+                  domp1
+               );
+            }
+         });
+      }
+
+      function insertAdjacentHTMLAll(num) {
+         let name = 'insertAdjacentHTMLAll';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = '<p></p>';
+
+         let i = num;
+         callTime(() => {
+            let arr = [];
+            while (i--) {
+               arr.push(domp1);
+            }
+            domdiv.insertAdjacentHTML(
+               'beforeend',
+               arr.join('')
+            );
+         });
+      }
+
+      function insertAdjacentElement(num) {
+         let name = 'insertAdjacentElement';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = document.createElement('p');
+
+         let i = num;
+         callTime(() => {
+            while (i--) {
+               domdiv.insertAdjacentElement(
+                  'beforeend',
+                  domp1.cloneNode()
+               );
+            }
+         });
+      }
+
+      function innerHTMLAll(num) {
+         let name = 'innerHTMLAll';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = '<p></p>';
+
+         let i = num;
+         callTime(() => {
+            let arr = [];
+            while (i--) {
+               arr.push(domp1);
+            }
+            domdiv.innerHTML = arr.join('');
+         });
+      }
+
+      function innerHTMLAllTemplateAppendChild(num) {
+         let name = 'innerHTMLAllTemplateAppendChild';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = '<p></p>';
+
+         let i = num;
+         callTime(() => {
+            let dom = document.createElement('template');
+            let arr = [];
+            while (i--) {
+               arr.push(domp1);
+            }
+            dom.innerHTML = arr.join('');
+            domdiv.appendChild(dom.content);
+         });
+      }
+
+      function innerHTMLAllTemplateInsertBefore(num) {
+         let name = 'innerHTMLAllTemplateInsertBefore';
+         let domdiv = document.getElementById('div');
+         domdiv.innerHTML = '';
+         let domp1 = '<p></p>';
+
+         let i = num;
+         callTime(() => {
+            let dom = document.createElement('template');
+            let arr = [];
+            while (i--) {
+               arr.push(domp1);
+            }
+            dom.innerHTML = arr.join('');
+            domdiv.insertBefore(dom.content, null);
+         });
+      }
+
+
+      // let count = 500000;
+      let count = 2000000;
+
+      // callObjectAssign0(count);
+      // callObjectAssign1(count);
+      // callObjectAssign2(count);
+
+      // createTextNode(count);
+      // createTextNodeClone(count);
+
+      // vsMap(count);
+      // innerHTMLEmpty(count);
+      // textContentEmpty(count);
+
+      // loopDomfraAppendChild(count);
+
+      // loopAppendChild(count);
+
+      // innerHTMLAllTemplateAppendChild(count);
+      // innerHTMLAllTemplateInsertBefore(count);
+
+      // insertBefore(count);
+      // appendChild(count);
+      // insertAdjacentHTML(count);
+      // insertAdjacentElement(count);
+      // innerHTMLAll(count);
+      // insertAdjacentHTMLAll(count);
+
+
+      // before(count);
+
+      // testDomFraAppendChild(count);
+      // testAppend(count);
+      // testAppendChildFor(count);
+      // testAppendChildForOf(count);
+   </script>
+
+
+   <script>
+      // const obj = (a) => Object[a];
+      // const assign = (a, b) => obj('assign')(a, b);
+
+      // console.log(
+      //    assign([], [1, 2, 3])
+      // );
+      // console.log(
+      //    Object['assign']([], [1, 2, 3])
+      // )
+
+   </script>
+</body>
+
+</html>
