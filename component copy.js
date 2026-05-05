@@ -93,7 +93,7 @@ import {
    ]);
 
    const gb_parseto_template = new Set([
-      'if', 'else', 'for',
+      'for', 'if', 'else',
       'switch', 'case', 'default',
    ]);
 
@@ -201,16 +201,14 @@ import {
    const callUiFun = ($this, objcf) => {
       if (objcf) {
          for (let conf of objcf) {
-            if (conf) {
-               callCfFun($this, conf);
-               callUiFun($this, conf.c);
-            }
+            callCfFun($this, conf);
+            callUiFun($this, conf.c);
          }
       }
    };
 
    // 当运行时执行的变量发生变化 递归将变量覆盖到父节点
-   const assignValToPcfRec = (arrkeys, i0) => {
+   const assignvalpdomrec = (arrkeys, i0) => {
       let k = arrkeys.join(',');
       let s = `${gb_args}[${i0}]`;
       return `while(${s}){Object.assign(${s}.a,{${k}});${s}=${s}.p;}`;
@@ -222,7 +220,7 @@ import {
     * @param {Number} i0 
     * @returns 
     */
-   const codeExpCfScope = (arrkeys, i0) =>
+   const codeExpandConf = (arrkeys, i0) =>
       `${gb_code_use_strict}let\x20{${arrkeys.join(',')}}=${gb_args}[${i0}].a;`;
 
    /**
@@ -268,69 +266,87 @@ import {
 
    /**
     * 
-    * @param {HTMLElement} $this 
-    * @param {Object} conf
-    * @param {Node} node
-    * @param {Boolean} scope
-    */
-   const parseChildNode = ($this, conf, node, scope = true) => {
-      let nodelist = childNodes(node);
-      let arr = [];
-      for (let i = 0, l = length(nodelist); i < l; i++) {
-         arr[i] = nodelist[i];
-      }
-
-      for (let i = 0, l = length(arr); i < l; i++) {
-         parseNodeAll($this, conf, node, arr[i], scope);
-      }
-
-      // let ter = childNodes(node).values(), obj;
-      // while (!(obj = ter.next()).done) {
-      //    // parseNodeAll($this, conf, node, obj.value, scope);
-      // }
-
-      // 避免子节点迭代动态重复计算 等迭代结束再处理子元素 
-      for (let i = 0, l = length(conf.c); i < l; i++) {
-         let scf = conf.c[i];
-         if (scf) {
-            scf.r(scf);
-            parseChildNode($this, scf, scf.m, scope);
-         }
-      }
-   };
-
-   /**
-    * 
     * @param {HTMLElement} $this
+    * @param {Array} nodes
     * @param {Number} pcf
-    * @param {Node} pnode
-    * @param {Node} node
     * @param {Boolean} scope
     * @returns 
     */
-   const parseNodeAll = ($this, pcf, pnode, node, scope = true) => {
+   const parseNode = ($this, nodes, pcf, scope = true) => {
+      let node = nodes[1];
+      let name = nodeName(node);
       let type = nodeType(node);
       if (type === 1) {
-         let tag = getAttribute(node, '-');
-         if (nodeName(node) === 'TEMPLATE') {
-            if (tag === 'ifelse') {
-               let nodelist = childNodes(content(node));
-               let arrconf = [];
-               for (let i = 0, il = length(nodelist); i < il; i++) {
-                  let dom = nodelist[i];
-                  let atr = getAttribute(dom, '.');
-                  let isbreak = hasAttribute(dom, gb_break) ? gb_break
-                     : (hasAttribute(dom, gb_continue) ? gb_continue : '');
-                  if (isbreak) {
-                     isbreak += ';';
+         if (name === 'TEMPLATE' && hasAttribute(node, '@')) {
+            let tag = getAttribute(node, '@');
+            if (tag === 'if' || tag === 'ifelse') {
+               if (tag === 'if') {
+                  let dom_a = nodes[0]; // 用真实 node  处理一遍
+                  let arrdelete = [];
+                  let domifelse = gb_null;
+                  while (dom_a) {
+                     let dom = dom_a;
+                     let typ = nodeType(dom);
+                     dom_a = nextSibling(dom_a);
+                     if (typ === 1) {
+                        let tag = getAttribute(dom, '@');
+                        if (tag === 'if' || tag === 'else') {
+                           let l = length(arrdelete);
+                           while (l--) { remove(arrdelete[l]); }
+                           arrdelete = [];
+                           if (tag === 'if' && domifelse === gb_null) {
+                              domifelse = cloneNode($this.$cf.temp);
+                              setAttribute(domifelse, '@', 'ifelse');
+                              insertBefore(parentNode(dom), domifelse, dom);
+                           }
+                           appendChild(content(domifelse), dom);
+                        } else {
+                           push(arrdelete, dom);
+                        }
+                     } else {
+                        push(arrdelete, dom);
+                     }
+                     if (dom_a && nodeType(dom_a) === 1 && hasAttribute(dom_a, 'if')) {
+                        break;
+                     }
                   }
-                  push(arrconf, {
-                     // n: cloneNode(content(dom), true),
-                     n: content(dom),
-                     c: atr ? atr : '',
-                     b: isbreak,
-                     m: getAttribute(dom, '-'),
-                  });
+                  nodes[0] = domifelse;
+                  nodes[1] = cloneNode(domifelse, true);
+               }
+
+               let lastchild = content(nodes[0]).lastChild;
+               // 真实 node 优化
+               let nodelist = childNodes(content(nodes[0]));
+               let ter = nodelist.values();
+               let obj, arrconf = [], arrdels = [];
+               while (!(obj = ter.next()).done) {
+                  let dom = obj.value;
+                  let tag = getAttribute(dom, '@');
+                  let atr = getAttribute(dom, '.');
+                  if (tag === 'if'
+                     || tag === 'else'
+                     && (atr || dom === lastchild)) {
+                     let isbreak = hasAttribute(dom, gb_break) ? gb_break
+                        : (hasAttribute(dom, gb_continue) ? gb_continue : '');
+                     if (isbreak) {
+                        isbreak += ';';
+                     }
+                     push(arrconf, {
+                        n: cloneNode(content(dom), true),
+                        c: atr ? atr : '',
+                        b: isbreak,
+                        m: tag === 'else' && atr ? 'else\x20if' : tag,
+                     });
+                  } else {
+                     push(arrdels, dom); // 真实 node 优化
+                  }
+               }
+               let l = length(arrdels);
+               while (l--) { remove(arrdels[l]); }
+
+               if (!arrconf[0].c) {
+                  remove(nodes[0]);
+                  return;
                }
 
                let com0 = cloneNode(gb_domcom);
@@ -367,14 +383,14 @@ import {
 
                   if (!cf.b[9]) {
                      let aks = keys(cf.a);
-                     let sexp = codeExpCfScope(aks, 0);
+                     let sexp = codeExpandConf(aks, 0);
 
                      let code = [];
                      for (let i = 0, l = length(arrconf); i < l; i++) {
                         let obj = arrconf[i];
                         if (obj.c) {
                            let loop = gb_reg3.test(obj.c)
-                              ? assignValToPcfRec(aks, 0) : '';
+                              ? assignvalpdomrec(aks, 0) : '';
                            let loopf = loop ? `||(function(){${loop}}).call(this,${gb_arg0})` : '';
                            push(code, `${obj.m}(${obj.c}${loopf}){${loop}${gb_arg1}(${i});${obj.b}}`);
                         } else {
@@ -391,122 +407,49 @@ import {
                   removeOldNodes(com0, com1);
 
                   cf.b[9].call($this, cf, (k) => {
-                     parseChildNode($this, cf, arrconf[k].n, true);
+                     parseChildNode($this, childNodes(arrconf[k].n), cf, true);
                   });
-
                   // try {
                   //    removeOldNodes(com0, com1);
 
                   //    cf.b[9].call($this, cf, (k) => {
-                  //       cf.b[40] = arrconf[k].c;
-                  //       parseChildNode($this, cf, arrconf[k].n, true);
+                  //       cf.b[40] = subs[k].c;
+                  //       parseChildNode($this, subs[k].n, cf, true);
                   //    });
                   // } catch (e) {
                   //    throw new Error(cf.b[40]);
                   // }
                };
                push(pcf.c, conf);
-            } else if (tag === 'switch') {
-               let _isbreak = hasAttribute(node, gb_break) ? gb_break
-                  : (hasAttribute(node, gb_continue) ? gb_continue : '');
-
+               conf.r(conf);
+            } else if (tag === 'for') {
                let nodelist = childNodes(content(node));
-               let arrconf = [];
-               for (let i = 0, il = length(nodelist); i < il; i++) {
-                  let dom = nodelist[i];
-                  let atr = getAttribute(dom, '.');
-                  let isbreak = hasAttribute(dom, gb_break)
-                     ? gb_break : (hasAttribute(dom, gb_continue)
-                        ? gb_continue : _isbreak);
-                  if (isbreak) {
-                     isbreak += ';';
-                  }
-                  push(arrconf, {
-                     // n: cloneNode(content(dom), true),
-                     n: content(dom),
-                     c: atr ? atr : '',
-                     b: isbreak,
-                     m: getAttribute(dom, '-'),
-                  });
+               if (!length(nodelist)) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               let prop = getAttribute(node, '.');
+
+               if (prop === gb_null) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               prop = slice(prop.split(/\s+/g).filter(v => v !== ''), 0, 3);
+
+               if (length(prop) < 2) {
+                  remove(nodes[0]);
+                  return;
                }
 
                let com0 = cloneNode(gb_domcom);
                let com1 = cloneNode(gb_domcom);
 
                let conf = createNodeConf(com1, pcf);
-               conf.b[10] = getAttribute(node, '.');
-               conf.b[11] = arrconf;
-               conf.b[20] = com0;
-               conf.b[21] = com1;
-               conf.b[30] = scope;
-               conf.r = (cf) => {
-                  setRecScope($this, cf);
-                  let pm = cf.p.m;
-                  if (nodeType(pm) === 8) {
-                     let pn = parentNode(pm);
-                     insertBefore(pn, cf.b[20], pm);
-                     insertBefore(pn, cf.b[21], pm);
-                  } else {
-                     appendChild(pm, cf.b[20]);
-                     appendChild(pm, cf.b[21]);
-                  }
-               };
-               conf.f = ($this, cf) => {
-                  if (cf.b[30]) {
-                     cf.b[30] = false;
-                     setRecScope($this, cf);
-                  }
-
-                  let prop = cf.b[10];
-                  let arrconf = cf.b[11];
-                  let com0 = cf.b[20];
-                  let com1 = cf.b[21];
-
-                  if (!cf.b[9]) {
-                     let aks = keys(cf.a);
-                     let sexp = codeExpCfScope(aks, 0);
-                     let loop = gb_reg3.test(cf.b[10])
-                        ? assignvalpdomrec(aks, 0) : '';
-
-                     let code = [];
-                     for (let i = 0, l = length(arrconf); i < l; i++) {
-                        let obj = arrconf[i];
-                        let lop = obj.b ? loop : (i + 1 === l ? loop : '');
-                        push(code, `${obj.m}\x20${obj.c}:${lop}${gb_arg1}(${i});${obj.b}`);
-                     }
-
-                     cf.b[9] =
-                        func(`${sexp}switch(${prop}){${code.join('')}}`);
-                  }
-
-                  removeOldNodes(com0, com1);
-
-                  cf.b[9].call($this, cf, (k) => {
-                     parseChildNode($this, cf, arrconf[k].n, true);
-                  });
-                  // try {
-                  //    removeOldNodes(com0, com1);
-
-                  //    cf.b[9].call($this, cf, (k) => {
-                  //       cf.b[40] = arrconf[k].c;
-                  //       parseChildNode($this, cf, arrconf[k].n, true);
-                  //    });
-                  // } catch (e) {
-                  //    console.log(e);
-                  //    throw new Error(cf.b[40]);
-                  // }
-               };
-               push(pcf.c, conf);
-            } else if (tag === 'for') {
-               let prop = getAttribute(node, '.');
-
-               let com0 = cloneNode(gb_domcom);
-               let com1 = cloneNode(gb_domcom);
-
-               let conf = createNodeConf(com1, pcf);
-               conf.b[10] = slice(prop.split(/\s+/g).filter(v => v !== ''), 0, 3);
-               conf.b[11] = node;
-               conf.b[12] = childNodes(content(node)); // 类型必须是实时的 NodeList
+               conf.b[10] = prop;
+               conf.b[11] = nodes[0];
+               conf.b[12] = nodelist; // 类型必须是实时的 NodeList
                conf.b[20] = com0;
                conf.b[21] = com1;
                conf.b[30] = scope;
@@ -542,7 +485,7 @@ import {
                   let val = str.splice(-1)[0];
 
                   let aks = keys(cf.a);
-                  let sexp = codeExpCfScope(aks, 0);
+                  let sexp = codeExpandConf(aks, 0);
 
                   let str0 = `Object.assign(${gb_arg0}.a,{${str.join(',')}});`;
 
@@ -609,7 +552,7 @@ import {
                         let j = (lens - lencfc) / lensub;
                         while (j--) {
                            // 无需 作用域设置
-                           parseChildNode($this, cf, node, false);
+                           parseChildNode($this, nodelist, cf, false);
                         }
                      }
                      // 不减少 不增多 直接更新
@@ -637,24 +580,138 @@ import {
                   } else { // 初始 或 空
                      cf.b[9]
                         .call($this, cf, (k) => {
-                           console.log(cf);
-                           console.log(node);
-                           parseChildNode($this, cf, cloneNode(node, true), false);
+                           parseChildNode($this, nodelist, cf, false);
                         });
                   }
                };
                push(pcf.c, conf);
+               conf.r(conf);
+            } else if (tag === 'switch') {
+
+               let prop = getAttribute(node, '.');
+               if (prop === gb_null) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               let isbreak = hasAttribute(node, gb_break) ? gb_break
+                  : (hasAttribute(node, gb_continue) ? gb_continue : '');
+
+               // 真实 node 优化
+               let nodelist = childNodes(content(nodes[0]));
+               let ter = nodelist.values();
+               let obj, arrconf = [], arrdels = [];
+               while (!(obj = ter.next()).done) {
+                  let dom = obj.value;
+                  let tag = getAttribute(dom, '@');
+                  let atr = getAttribute(dom, '.');
+                  if (tag === 'default'
+                     || tag === 'case' && atr
+                  ) {
+                     let sbreak = hasAttribute(dom, gb_break)
+                        ? gb_break : (hasAttribute(dom, gb_continue)
+                           ? gb_continue : isbreak);
+                     if (sbreak) {
+                        sbreak += ';';
+                     }
+                     push(arrconf, {
+                        n: cloneNode(content(dom), true),
+                        c: atr ? atr : '',
+                        b: sbreak,
+                        m: tag === 'else' && atr ? 'else\x20if' : tag,
+                     });
+                  } else {
+                     push(arrdels, dom); // 真实 node 优化
+                  }
+               }
+               let l = length(arrdels);
+               while (l--) { remove(arrdels[l]); }
+
+               if (!arrconf[0].c) {
+                  remove(nodes[0]);
+                  return;
+               }
+
+               let com0 = cloneNode(gb_domcom);
+               let com1 = cloneNode(gb_domcom);
+
+               let conf = createNodeConf(com1, pcf);
+               conf.b[10] = prop;
+               conf.b[11] = arrconf;
+               conf.b[20] = com0;
+               conf.b[21] = com1;
+               conf.b[30] = scope;
+               conf.r = (cf) => {
+                  setRecScope($this, cf);
+                  let pm = cf.p.m;
+                  if (nodeType(pm) === 8) {
+                     let pn = parentNode(pm);
+                     insertBefore(pn, cf.b[20], pm);
+                     insertBefore(pn, cf.b[21], pm);
+                  } else {
+                     appendChild(pm, cf.b[20]);
+                     appendChild(pm, cf.b[21]);
+                  }
+               };
+               conf.f = ($this, cf) => {
+                  if (cf.b[30]) {
+                     cf.b[30] = false;
+                     setRecScope($this, cf);
+                  }
+
+                  let prop = cf.b[10];
+                  let arrconf = cf.b[11];
+                  let com0 = cf.b[20];
+                  let com1 = cf.b[21];
+
+                  if (!cf.b[9]) {
+                     let aks = keys(cf.a);
+                     let sexp = codeExpandConf(aks, 0);
+                     let loop = gb_reg3.test(cf.b[10])
+                        ? assignvalpdomrec(aks, 0) : '';
+
+                     let code = [];
+                     for (let i = 0, l = length(arrconf); i < l; i++) {
+                        let obj = arrconf[i];
+                        let lop = obj.b ? loop : (i + 1 === l ? loop : '');
+                        push(code, `${obj.m}\x20${obj.c}:${lop}${gb_arg1}(${i});${obj.b}`);
+                     }
+
+                     cf.b[9] =
+                        func(`${sexp}switch(${prop}){${code.join('')}}`);
+                  }
+
+                  removeOldNodes(com0, com1);
+
+                  cf.b[9].call($this, cf, (k) => {
+                     parseChildNode($this, childNodes(arrconf[k].n), cf, true);
+                  });
+                  // try {
+                  //    removeOldNodes(com0, com1);
+
+                  //    cf.b[9].call($this, cf, (k) => {
+                  //       cf.b[40] = subs[k].c;
+                  //       parseChildNode($this, subs[k].n, cf, true);
+                  //    });
+                  // } catch (e) {
+                  //    throw new Error(cf.b[40]);
+                  // }
+               };
+               push(pcf.c, conf);
+               conf.r(conf);
             }
          } else {
             let bind = getAttributeRemove(node, '#');
             let prop = getAttributeRemove(node, '.');
             let attr = getAttributeRemove(node, '..');
+            let nodelist = childNodes(cloneNode(node, true));
 
             let conf = createNodeConf(node, pcf);
             conf.b[10] = bind;
             conf.b[30] = scope;
             conf.r = (cf) => {
                setRecScope($this, cf);
+               textContentSet(cf.m, '');
                let pm = cf.p.m;
                if (nodeType(pm) === 8) {
                   insertBefore(parentNode(pm), cf.m, pm);
@@ -677,8 +734,8 @@ import {
                }
             };
             push(pcf.c, conf);
+            conf.r(conf);
 
-            // 属性解析
             let iterarr = [];
             if (prop) {
                push(iterarr, {
@@ -702,42 +759,40 @@ import {
                   scf.b[11] = iterarr[i].x(arr[1], arr[2]);
                   scf.b[30] = scope;
                   scf.r = (cf) => {
-                     // setRecScope($this, cf);
+                     setRecScope($this, cf);
                   };
                   scf.f = ($this, cf) => {
-                     // if (cf.b[30]) {
-                     //    cf.b[30] = false;
-                     //    setRecScope($this, cf);
-                     // }
-
-                     if (!cf.b[9]) {
-                        // 共用父节点作用域
-                        let aks = keys(cf.p.a);
-                        let sexp = codeExpCfScope(aks, 0);
-                        let loop = gb_reg3.test(cf.b[10])
-                           ? assignValToPcfRec(aks, 0) : '';
-
-                        // 共用父节点作用域 所以使用 gb_arg1
-                        cf.b[9] =
-                           func(`${sexp}${gb_arg1}.m.${cf.b[11]};${loop}`);
+                     if (cf.b[30]) {
+                        cf.b[30] = false;
+                        setRecScope($this, cf);
                      }
 
-                     // 共用父节点作用域
-                     cf.b[9].call($this, cf.p, cf);
+                     if (!cf.b[9]) {
+                        let aks = keys(cf.a);
+                        let sexp = codeExpandConf(aks, 0);
+                        let loop = gb_reg3.test(cf.b[10])
+                           ? assignvalpdomrec(aks, 0) : '';
+
+                        cf.b[9] =
+                           func(`${sexp}${gb_arg0}.m.${cf.b[11]};${loop}`);
+                     }
+
+                     cf.b[9].call($this, cf);
                      // try {
-                     //    cf.b[9].call($this, cf.p, cf);
+                     //    cf.b[9].call($this, cf);
                      // } catch (e) {
                      //    throw new Error(cf.b[11]);
                      // }
                   };
                   push(conf.d, scf);
+                  scf.r(scf);
                }
             }
-         }
-      }
-      else if (type === 3) {
-         remove(node);
 
+            // 解析子节点
+            parseChildNode($this, nodelist, conf, scope);
+         }
+      } else if (type === 3) {
          let val = trim(node.nodeValue);
          let arr = [];
          let len;
@@ -746,41 +801,32 @@ import {
             return '${}';
          });
          val = val.split(gb_reg2);
-
          len = length(val);
          while (len--) {
-            let str = val[len];
-            if (str) {
-               let conf = createNodeConf(createTextNode(str), pcf);
-               conf.r = (cf) => {
-                  // setRecScope($this, cf);
-                  let pm = cf.p.m;
-                  if (nodeType(pm) === 8) {
-                     insertBefore(parentNode(pm), cf.m, pm);
-                  } else {
-                     appendChild(pm, cf.m);
-                  }
-               };
-               val[len] = conf;
-            } else {
-               val[len] = gb_null;
-            }
+            let conf = createNodeConf(createTextNode(val[len]), pcf);
+            conf.r = (cf) => { // 普通文本节点 无需参数
+               setRecScope($this, cf);
+               let pm = cf.p.m;
+               if (nodeType(pm) === 8) {
+                  insertBefore(parentNode(pm), cf.m, pm);
+               } else {
+                  appendChild(pm, cf.m);
+               }
+            };
+            val[len] = conf;
          }
-
-         // 共用父节点作用域 所以使用 gb_arg1
-         let op_arg = gb_arg1 + '.m.nodeValue';
-
          len = length(arr);
          while (len--) {
-            let idx = len + 1;
+            let six = len + 1;
             if (trim(slice(arr[len], 2, -1))) {
                let conf = createNodeConf(createTextNode(''), pcf);
                conf.b[10] = arr[len];
-               conf.b[11] = `\`${arr[len]}\``;
-               conf.b[12] = `if(${op_arg}!==${conf.b[11]}){${op_arg}=${conf.b[11]}`;
+               conf.b[11] = gb_arg0 + '.m.nodeValue';
+               conf.b[12] = `\`${arr[len]}\``;
+               conf.b[13] = `if(${conf.b[11]}!==${conf.b[12]}){${conf.b[11]}=${conf.b[12]}`;
                conf.b[30] = scope;
                conf.r = (cf) => {
-                  // setRecScope($this, cf);
+                  setRecScope($this, cf);
                   let pm = cf.p.m;
                   if (nodeType(pm) === 8) {
                      insertBefore(parentNode(pm), cf.m, pm);
@@ -789,42 +835,60 @@ import {
                   }
                };
                conf.f = ($this, cf) => {
-                  // if (cf.b[30]) {
-                  //    cf.b[30] = false;
-                  //    setRecScope($this, cf);
-                  // }
-
-                  if (!cf.b[9]) {
-                     // 共用父节点作用域
-                     let aks = keys(cf.p.a);
-                     let sexp = codeExpCfScope(aks, 0);
-                     let loop = gb_reg3.test(cf.b[10])
-                        ? assignValToPcfRec(aks, 0) : '';
-
-                     cf.b[9] =
-                        func(`${sexp}${cf.b[12]}${loop}}`);
+                  if (cf.b[30]) {
+                     cf.b[30] = false;
+                     setRecScope($this, cf);
                   }
 
-                  // 共用父节点作用域
-                  cf.b[9].call($this, cf.p, cf);
+                  if (!cf.b[9]) {
+                     let aks = keys(cf.a);
+                     let sexp = codeExpandConf(aks, 0);
+                     let loop = gb_reg3.test(cf.b[10])
+                        ? assignvalpdomrec(aks, 0) : '';
+
+                     cf.b[9] =
+                        func(`${sexp}${cf.b[13]}${loop}}`);
+                  }
+
+                  cf.b[9].call($this, cf);
                   // try {
-                  //    cf.b[9].call($this, cf.p, cf);
+                  //    cf.b[9].call($this, cf);
                   // } catch (e) {
                   //    throw new Error(cf.b[11]);
                   // }
                };
-               val.splice(idx, 0, conf);
+               val.splice(six, 0, conf);
             } else {
-               val.splice(idx, 0, gb_null);
+               val.splice(six, 0, gb_null);
             }
          }
 
-         // 合并到末尾
-         pcf.c = pcf.c.concat(val);
+         for (let i = 0, l = length(val); i < l; i++) {
+            let conf = val[i];
+            if (conf) {
+               push(pcf.c, conf);
+               conf.r(conf);
+            }
+         }
       }
    };
 
-   const parseBeforeHandle = ($this, node, arrps, arrjsi, objtemp) => {
+   /**
+    * 
+    * @param {HTMLElement} $this 
+    * @param {Nodelist} nodelist
+    * @param {Object} pcf
+    * @param {Boolean} scope
+    */
+   const parseChildNode = ($this, nodelist, pcf, scope = true) => {
+      let ter = nodelist.values(), obj;
+      while (!(obj = ter.next()).done) {
+         let dom = obj.value;
+         parseNode($this, [dom, cloneNode(dom, true)], pcf, scope);
+      }
+   };
+
+   const parseBeforeHandle = ($this, node, arrps, arrjsi) => {
       let childs = childNodes(node);
       for (let i = length(childs) - 1; i >= 0; i--) {
          let node = childs[i], name = nodeName(node);
@@ -911,13 +975,6 @@ import {
                }
                break;
 
-            case 'TEMPLATE':
-               let tag = getAttribute(node, '-');
-               if (tag === 'if' || tag === 'for' || tag === 'switch') {
-                  push(objtemp[tag], node);
-               }
-               break;
-
             case gb_name_domtxt:
                if (trim(textContent(node)) === '') {
                   remove(node);
@@ -937,11 +994,7 @@ import {
    const parseTemplate = ($this) => {
       const domfratop = cloneNode(content($this.$cf.temp), true)
          , arr_ps_all = []
-         , arr_ps_jsi = []
-         , objtemplate = { if: [], for: [], switch: [] }
-         , arr_tempif = objtemplate.if
-         , arr_tempfor = objtemplate.for
-         , arr_tempswitch = objtemplate.switch;
+         , arr_ps_jsi = [];
 
       fetchComponentGen(domfratop);
 
@@ -949,101 +1002,8 @@ import {
          $this,
          domfratop,
          arr_ps_all,
-         arr_ps_jsi,
-         objtemplate
+         arr_ps_jsi
       );
-
-
-      // ifelse
-      for (let i = 0, il = length(arr_tempif); i < il; i++) {
-         let dom_a = arr_tempif[i];
-         let arrdelete = [];
-         let domtarget = gb_null;
-         let domcontent = gb_null;
-         while (dom_a) {
-            let dom = dom_a;
-            let typ = nodeType(dom);
-            dom_a = nextSibling(dom_a);
-            if (typ === 1) {
-               let tag = getAttribute(dom, '-');
-               if (tag === 'if' || tag === 'else') {
-                  let l = length(arrdelete);
-                  while (l--) { remove(arrdelete[l]); }
-                  arrdelete = [];
-                  if (tag === 'if' && domtarget === gb_null) {
-                     domtarget = cloneNode($this.$cf.temp);
-                     domcontent = content(domtarget);
-                     setAttribute(domtarget, '-', 'ifelse');
-                     insertBefore(parentNode(dom), domtarget, dom);
-                  }
-                  appendChild(domcontent, dom);
-               } else {
-                  push(arrdelete, dom);
-               }
-            } else {
-               push(arrdelete, dom);
-            }
-            if (dom_a && nodeType(dom_a) === 1 && hasAttribute(dom_a, 'if')) {
-               break;
-            }
-         }
-         if (domcontent) {
-            let nodelist = childNodes(domcontent);
-            let lastsub = lastChild(domcontent);
-            let arrdels = [];
-            for (let j = 0, jl = length(nodelist); j < jl; j++) {
-               let dom = nodelist[j];
-               let tag = getAttribute(dom, '-');
-               let str = getAttribute(dom, '.');
-               if (dom !== lastsub) {
-                  if (!str) {
-                     push(arrdels, dom);
-                  } else if (tag === 'else') {
-                     setAttribute(dom, '-', tag + '\x20if');
-                  }
-               }
-            }
-            let l = length(arrdels);
-            while (l--) { remove(arrdels[l]); }
-            if (getAttribute(nodelist[0], '-') !== 'if') {
-               remove(domtarget);
-               // textContentSet(domcontent, '');
-            }
-         }
-      }
-
-      // switch
-      for (let i = 0, il = length(arr_tempswitch); i < il; i++) {
-         let domtarget = arr_tempswitch[i];
-         let str = getAttribute(domtarget, '.');
-         if (!str) {
-            remove(domtarget);
-         } else {
-            let domcontent = content(domtarget);
-            let nodelist = childNodes(domcontent);
-            let arrdels = [];
-            for (let j = 0, jl = length(nodelist); j < jl; j++) {
-               let dom = nodelist[j];
-               let tag = getAttribute(dom, '-');
-               let str = getAttribute(dom, '.');
-               if (!str && tag !== 'default') {
-                  push(arrdels, dom);
-               }
-            }
-            let l = length(arrdels);
-            while (l--) { remove(arrdels[l]); }
-         }
-      }
-
-      // for 
-      for (let i = 0, il = length(arr_tempfor); i < il; i++) {
-         let domtarget = arr_tempfor[i];
-         let str = getAttribute(domtarget, '.');
-         if (!str || !length(childNodes(content(domtarget)))) {
-            remove(domtarget);
-         }
-      }
-
 
       let scope = true;
       let conf = createNodeConf($this.$sd);
@@ -1054,7 +1014,7 @@ import {
             setRecScope($this, cf);
          }
       };
-      parseChildNode($this, conf, domfratop, scope);
+      parseChildNode($this, childNodes(domfratop), conf, scope);
 
       Promise.allSettled(arr_ps_all).then(list => {
          for (let i = length(list) - 1; i >= 0; i--) {
@@ -1164,21 +1124,12 @@ import {
                   domtemp.innerHTML = res.txt
                      .replace(gb_reg10, (s, s1) => {
                         s = trim(s);
-                        s1 = toLowerCase(s1);
                         if (gb_parseto_template.has(s1)) {
                            if (indexOf(s, '</') === 0) {
                               return `</${gb_template}>`;
                            }
-                           s = trim(s.substring(length(s1) + 1));
-                           return `<${gb_template}\x20-='${s1}'\x20${s}`;
-                        } else if (s1 === gb_template && indexOf(s, '</') !== 0) {
-                           let i0 = indexOf(s, '.');
-                           let i1 = indexOf(s, '=');
-                           if (i0 > -1 && i1 > -1) {
-                              s1 = trim(slice(s, i0 + 1, i1));
-                              s = s.substring(i1);
-                              return `<${gb_template}\x20-='${s1}'\x20.${s}`;
-                           }
+                           s = s.substring(length(s1) + 1);
+                           return `<${gb_template}\x20@='${s1}'${s}`;
                         }
                         return s;
                      });
@@ -1190,7 +1141,7 @@ import {
                      true
                   );
                });
-            };
+            }
          }
       }
    };

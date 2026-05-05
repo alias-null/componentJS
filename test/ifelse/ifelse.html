@@ -1,13 +1,13 @@
 <script>
    const { val, called } = this;
-   var param = val(0);
+   var param = val(3);
 
-   setInterval(() => {
-      param.val++;
-      if (param.val > 4) {
-         param.val = 0;
-      }
-   }, 1000);
+   // setInterval(() => {
+   //    param.val++;
+   //    if (param.val > 4) {
+   //       param.val = 0;
+   //    }
+   // }, 1000);
 
    return {
       param,
@@ -15,7 +15,18 @@
 </script>
 
 <!-- if else 之间为无效 将被删除 -->
-<h3>if-${param.val}</h3>
+<h3 .="style.border=`${param.val}px solid red`">
+   ${param.val} 111 ${param.val} 222 ${param.val}
+</h3>
+
+789789
+789789 ${param.val}
+
+<h2>123</h2>
+123123
+<h2>789</h2>
+
+
 <if .="param.val==0">
    <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid blue`"></div>
 </if>
@@ -43,3 +54,24 @@
 <else>
    <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid red`"></div>
 </else>
+
+<switch .="param.val" break>
+   <case .="0">
+      <h1 .="id=param.val;style.border=`${param.val+2}px solid blue`">${param.val}</h1>
+   </case>
+   <case .="1">
+      <h2 .="id=param.val;style.border=`${param.val+2}px solid green`">${param.val}</h2>
+   </case>
+   <case .="2">
+      <h3 .="id=param.val;style.border=`${param.val+2}px solid yellow`">${param.val}</h3>
+   </case>
+   <case .="3">
+      <h4 .="id=param.val;style.border=`${param.val+2}px solid red`">${param.val}</h4>
+   </case>
+   <case .="4">
+      <h5 .="id=param.val;style.border=`${param.val+2}px solid orchid`">${param.val}</h5>
+   </case>
+   <DEFAULT break>
+      <h6 .="id=param.val;style.border=`${param.val+2}px solid rgb(0, 255, 251)`">${param.val}</h6>
+   </DEFAULT>
+</switch>
