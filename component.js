@@ -47,6 +47,7 @@ import {
    getAttributeRemove,
 } from "./utils/object.js";
 
+// import * as Object from "./utils/object.js"; // 批量导出并创建一个对象存储
 
 (function (window, document, undefined) {
    'use strict';
