@@ -16,6 +16,7 @@ export const push = (a, b) => a.push(b);
 export const toLowerCase = (a) => a.toLowerCase();
 export const toUpperCase = (a) => a.toUpperCase();
 export const indexOf = (a, b) => a.indexOf(b);
+export const lastIndexOf = (a, b) => a.lastIndexOf(b);
 export const keys = (a) => Object.keys(a);
 export const assign = (a, b) => Object.assign(a, b);
 export const slice = (a, b, c) => a.slice(b, c);

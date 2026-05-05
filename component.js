@@ -16,6 +16,7 @@ import {
    toLowerCase,
    toUpperCase,
    indexOf,
+   lastIndexOf,
    keys,
    assign,
    slice,
@@ -1067,7 +1068,7 @@ import {
          , orig = objurl.origin
          , file = objurl.pathname.replace(/[\/]+/g, '/');
       Component.$cf = {
-         base: orig + slice(file, 0, file.lastIndexOf('/') + 1),
+         base: orig + slice(file, 0, lastIndexOf(file, '/') + 1),
          href: sethref ? (orig + file) : gb_undf,
          attr: gb_attrname,
          name: tagname,
@@ -1244,7 +1245,7 @@ import {
                   $fp.set(target, confset);
                }
             }
-
+            // console.log($fp);
 
             if (isArr(val)) {
                return createProxy($this, val);
