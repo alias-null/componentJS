@@ -1,4 +1,53 @@
+
+import {
+   gb_window as window,
+   gb_document as document,
+} from "./utils/param.js";
+
+import {
+   // Object
+   getType,
+   href,
+   size,
+   length,
+   trim,
+   pop,
+   push,
+   remove,
+   toLowerCase,
+   toUpperCase,
+   indexOf,
+   keys,
+   assign,
+   slice,
+
+   // Node
+   content,
+   nodeName,
+   nodeType,
+   lastChild,
+   firstChild,
+   childNodes,
+   parentNode,
+   textContent,
+   nextSibling,
+   previousSibling,
+   textContentSet,
+   cloneNode,
+   appendChild,
+   insertBefore,
+   createElement,
+   createTextNode,
+   getAttribute,
+   hasAttribute,
+   removeAttribute,
+   setAttribute,
+} from "./utils/object.js";
+
+
 (function (window, document, undefined) {
+   'use strict';
+
    const gb_null = null;
    const gb_undf = undefined;
 
@@ -43,6 +92,15 @@
       'switch', 'case', 'default',
    ]);
 
+   const gb_type_length = {
+      Map: (t, a) => [t, size(a)],
+      Set: (t, a) => [t, size(a)],
+      Array: (t, a) => [t, length(a)],
+      Number: (t, a) => [t, length(a)],
+      String: (t, a) => [t, length(a)],
+      Object: (t, a) => [t, length(keys(a))],
+   };
+
    const gb_template = 'template';
    const gb_onload = 'onload';
    const gb_onunload = 'onunload';
@@ -61,10 +119,8 @@
       return console.log.apply(gb_null, arguments);
    }
 
-   const getTypeLength = (a, t) => {
-      if (!t) {
-         t = getType(a).replace('Proxy', '');
-      }
+   const getTypeLength = (a) => {
+      let t = getType(a).replace('Proxy', '');
       switch (t) {
          case 'Map': return [t, a.size];
          case 'Set': return [t, a.size];
@@ -74,16 +130,6 @@
          case 'Object': return [t, length(keys(a))];
       }
    };
-
-   const slice = (a, b, c) => a.slice(b, c);
-
-   const href = (a) => a.href;
-
-   const length = (a) => a.length;
-
-   const content = (a) => a.content;
-   const childNodes = (a) => a.childNodes;
-   const parentNode = (a) => a.parentNode;
 
    const func = (a) => Function(a);
 
@@ -101,28 +147,6 @@
    // const isWmap = (a) => getType(a) === 'WeakMap';
    // const isWset = (a) => getType(a) === 'WeakSet';
 
-   const trim = (a) => a.trim();
-
-   const pop = (a) => a.pop();
-
-   const remove = (a) => a.remove();
-
-   const nodeName = (a) => a.nodeName;
-
-   const nodeType = (a) => a.nodeType;
-
-   const firstChild = (a) => a.firstChild;
-
-   const nextSibling = (a) => a.nextSibling;
-
-   // const previousSibling = (a) => a.previousSibling;
-
-   const toLowerCase = (a) => a.toLowerCase();
-
-   const createElement = (a) => document.createElement(a);
-
-   const createTextNode = (a) => document.createTextNode(a);
-
    const promiseResolve = (a) => Promise.resolve(a);
 
    const promiseDomOnLoad = (a) => new Promise((resolve, reject) => {
@@ -134,39 +158,13 @@
       }, gb_event_once_conf);
    });
 
-   const keys = (a) => Object.keys(a);
-
-   const assign = (a, b) => Object.assign(a, b);
-
-   const appendChild = (a, b) => a.appendChild(b);
-
-   const cloneNode = (a, b) => a.cloneNode(b);
-
-   const indexOf = (a, b) => a.indexOf(b);
-
-   const push = (a, b) => a.push(b);
-
-   const textContent = (a) => a.textContent;
-
-   const textContentSet = (a, b) => a.textContent = b;
-
-   const getAttr = (a, b) => a.getAttribute(b);
-
    const getAttrDel = (a, b) => {
       let s = a.getAttribute(b);
       a.removeAttribute(b);
       return s;
    };
 
-   const hasAttr = (a, b) => a.hasAttribute(b);
-
-   const delAttr = (a, b) => a.removeAttribute(b);
-
    const domQueryAll = (a, b) => a.querySelectorAll(b);
-
-   const insertBefore = (a, b, c) => a.insertBefore(b, c);
-
-   const setAttr = (a, b, c) => a.setAttribute(b, c);
 
    const addEvent = (a, b, c, d) => a.addEventListener(b, c, d);
 
@@ -286,8 +284,8 @@
       let name = nodeName(node);
       let type = nodeType(node);
       if (type === 1) {
-         if (name === 'TEMPLATE' && hasAttr(node, '@')) {
-            let tag = getAttr(node, '@');
+         if (name === 'TEMPLATE' && hasAttribute(node, '@')) {
+            let tag = getAttribute(node, '@');
             if (tag === 'if' || tag === 'ifelse') {
                if (tag === 'if') {
                   let dom_a = nodes[0]; // 用真实 node  处理一遍
@@ -298,14 +296,14 @@
                      let typ = nodeType(dom);
                      dom_a = nextSibling(dom_a);
                      if (typ === 1) {
-                        let tag = getAttr(dom, '@');
+                        let tag = getAttribute(dom, '@');
                         if (tag === 'if' || tag === 'else') {
                            let l = length(arrdelete);
                            while (l--) { remove(arrdelete[l]); }
                            arrdelete = [];
                            if (tag === 'if' && domifelse === gb_null) {
                               domifelse = cloneNode($this.$cf.temp);
-                              setAttr(domifelse, '@', 'ifelse');
+                              setAttribute(domifelse, '@', 'ifelse');
                               insertBefore(parentNode(dom), domifelse, dom);
                            }
                            appendChild(content(domifelse), dom);
@@ -315,7 +313,7 @@
                      } else {
                         push(arrdelete, dom);
                      }
-                     if (dom_a && nodeType(dom_a) === 1 && hasAttr(dom_a, 'if')) {
+                     if (dom_a && nodeType(dom_a) === 1 && hasAttribute(dom_a, 'if')) {
                         break;
                      }
                   }
@@ -330,13 +328,13 @@
                let obj, arrconf = [], arrdels = [];
                while (!(obj = ter.next()).done) {
                   let dom = obj.value;
-                  let tag = getAttr(dom, '@');
-                  let atr = getAttr(dom, '.');
+                  let tag = getAttribute(dom, '@');
+                  let atr = getAttribute(dom, '.');
                   if (tag === 'if'
                      || tag === 'else'
                      && (atr || dom === lastchild)) {
-                     let isbreak = hasAttr(dom, gb_break) ? gb_break
-                        : (hasAttr(dom, gb_continue) ? gb_continue : '');
+                     let isbreak = hasAttribute(dom, gb_break) ? gb_break
+                        : (hasAttribute(dom, gb_continue) ? gb_continue : '');
                      if (isbreak) {
                         isbreak += ';';
                      }
@@ -438,7 +436,7 @@
                   return;
                }
 
-               let prop = getAttr(node, '.');
+               let prop = getAttribute(node, '.');
 
                if (prop === gb_null) {
                   remove(nodes[0]);
@@ -597,14 +595,14 @@
                conf.r(conf);
             } else if (tag === 'switch') {
 
-               let prop = getAttr(node, '.');
+               let prop = getAttribute(node, '.');
                if (prop === gb_null) {
                   remove(nodes[0]);
                   return;
                }
 
-               let isbreak = hasAttr(node, gb_break) ? gb_break
-                  : (hasAttr(node, gb_continue) ? gb_continue : '');
+               let isbreak = hasAttribute(node, gb_break) ? gb_break
+                  : (hasAttribute(node, gb_continue) ? gb_continue : '');
 
                // 真实 node 优化
                let nodelist = childNodes(content(nodes[0]));
@@ -612,13 +610,13 @@
                let obj, arrconf = [], arrdels = [];
                while (!(obj = ter.next()).done) {
                   let dom = obj.value;
-                  let tag = getAttr(dom, '@');
-                  let atr = getAttr(dom, '.');
+                  let tag = getAttribute(dom, '@');
+                  let atr = getAttribute(dom, '.');
                   if (tag === 'default'
                      || tag === 'case' && atr
                   ) {
-                     let sbreak = hasAttr(dom, gb_break)
-                        ? gb_break : (hasAttr(dom, gb_continue)
+                     let sbreak = hasAttribute(dom, gb_break)
+                        ? gb_break : (hasAttribute(dom, gb_continue)
                            ? gb_continue : isbreak);
                      if (sbreak) {
                         sbreak += ';';
@@ -828,7 +826,7 @@
          while (len--) {
             let six = len + 1;
             if (trim(slice(arr[len], 2, -1))) {
-               let conf = createNodeConf(createTextNode('1'), pcf);
+               let conf = createNodeConf(createTextNode(''), pcf);
                conf.b[10] = arr[len];
                conf.b[11] = gb_arg0 + '.m.nodeValue';
                conf.b[12] = `\`${arr[len]}\``;
@@ -959,17 +957,17 @@
                      push(arrjsi, length(arrps) - 1);
                   }
                } else if (!!txt && !typ) {
-                  if (hasAttr(node, gb_onload)) {
+                  if (hasAttribute(node, gb_onload)) {
                      push(
                         arrps,
                         promiseResolve({ s: gb_onload, o: txt })
                      );
-                  } else if (hasAttr(node, gb_onunload)) {
+                  } else if (hasAttribute(node, gb_onunload)) {
                      push(
                         arrps,
                         promiseResolve({ s: gb_onunload, o: txt })
                      );
-                  } else if (hasAttr(node, gb_onadopt)) {
+                  } else if (hasAttribute(node, gb_onadopt)) {
                      push(
                         arrps,
                         promiseResolve({ s: gb_onadopt, o: txt })
@@ -1091,7 +1089,7 @@
       let domlist = domQueryAll(doc, `[${attr}*="-"]`);
       for (let i = 0, l = length(domlist); i < l; i++) {
          const domtemp = domlist[i];
-         const name = getAttr(domtemp, attr);
+         const name = getAttribute(domtemp, attr);
          domtemp.replaceWith(createElement(name));
 
          defineElementClass(
@@ -1116,7 +1114,7 @@
          for (let i = 0, l = length(arrkey); i < l; i++) {
             if (indexOf(arrkey[i], '-') > -1) {
                const name = arrkey[i];
-               fetch(getAttr(domjson[name], gb_attrname)).then(r => {
+               fetch(getAttribute(domjson[name], gb_attrname)).then(r => {
                   if (r.status !== 200) {
                      return gb_null;
                   }
@@ -1308,7 +1306,7 @@
          this.$sd = this.shadowRoot;
          let h = href(this.$cf);
          if (h) {
-            setAttr(this, this.$cf.attr, h);
+            setAttribute(this, this.$cf.attr, h);
          }
          parseTemplate(this);
       }
