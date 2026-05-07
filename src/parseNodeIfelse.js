@@ -9,15 +9,18 @@ import codeAssignToPcf from './codeAssignToPcf.js';
 import removeComOldNodes from './removeComOldNodes.js';
 import parseChildNode from './parseChildNode.js';
 import insertCommAuchToNode from './insertCommAuchToNode.js';
+import callConfFunRec from './callConfFunRec.js';
+import assignScope from './assignScope.js';
 
 /**
  * 
  * @param {HTMLElement} $this
  * @param {Number} pcf
  * @param {Node} node
+ * @param {String} name
  * @returns 
  */
-const parseNodeIfelse = ($this, pcf, node) => {
+const parseNodeIfelse = ($this, pcf, node, name) => {
    let nodelist = _obj.childNodes(_obj.content(node));
    let arrconf = [];
    for (let i = 0, il = _obj.length(nodelist); i < il; i++) {
@@ -33,26 +36,24 @@ const parseNodeIfelse = ($this, pcf, node) => {
          n: _obj.content(dom),
          c: atr ? atr : '',
          b: isbreak,
-         m: _obj.getAttribute(dom, '-'),
+         g: _obj.getAttribute(dom, '-'),
       });
    }
 
    let com0 = _obj.cloneNode(_pam.gb_domcom);
    let com1 = _obj.cloneNode(_pam.gb_domcom);
 
-   let conf = createNodeConf(com1, pcf);
-   // conf.b[10] = arrconf[0].c;
-   conf.b[11] = arrconf;
-   conf.b[12] = {};
-   conf.b[13] = _pam.gb_null;
-   conf.b[20] = com0;
-   conf.b[21] = com1;
+   let conf = createNodeConf(com1, node, pcf);
+   conf.u = name;
+   conf.b[0] = arrconf;
+   conf.b[8] = { s: com0, e: com1 };
+   conf.b[10] = {};
+   conf.b[11] = _pam.gb_null;
    conf.e = insertCommAuchToNode;
    conf.f = ($this, cf) => {
-      // let prop = cf.b[10];
-      let arrconf = cf.b[11];
-      let com0 = cf.b[20];
-      let com1 = cf.b[21];
+      let arrconf = cf.b[0];
+      let com0 = cf.b[8].s;
+      let com1 = cf.b[8].e;
 
       if (!cf.b[9]) {
          let aks = _obj.keys(cf.a);
@@ -68,9 +69,9 @@ const parseNodeIfelse = ($this, pcf, node) => {
                let loop = _obj.test(_reg.reg3, obj.c)
                   ? codeAssignToPcf(aks, 0) : '';
                let loopf = loop ? `||(function(){${loop}}).call(this,${ag0})` : '';
-               _obj.push(code, `${obj.m}(${obj.c}${loopf}){${loop}${ag1}(${i});${obj.b}}`);
+               _obj.push(code, `${obj.g}(${obj.c}${loopf}){${loop}${ag1}(${i});${obj.b}}`);
             } else {
-               _obj.push(code, `${obj.m}{${ag1}(${i});${obj.b}}`);
+               _obj.push(code, `${obj.g}{${ag1}(${i});${obj.b}}`);
                arrconf.splice(i + 1);
                break;
             }
@@ -81,42 +82,56 @@ const parseNodeIfelse = ($this, pcf, node) => {
             _obj.func(`${sexp}${_obj.join(code, '')}`);
       }
 
-      console.log(arrconf);
-      let l = _obj.length(arrconf);
+      let realkey = _pam.gb_null;
       cf.b[9].call($this, cf, (k) => {
-         cf.s = k;
-
-         // 缓存上一个条件分支
-         if (k !== cf.b[13]) {
-            cf.b[13] = k;
-            removeComOldNodes(com0, com1);
+         realkey = k;
+         console.log('ifelse ==>>', k);
+         // 设置 ifelse 节点的分支标记
+         if (cf.r !== k) {
+            // 等于 true 说明是初始的状况
+            if (cf.r !== true) {
+               removeComOldNodes(com0, com1);
+            }
+            // 设置新的分支标记
+            cf.r = k;
          }
-         console.log(k);
-         console.log(cf);
-         // 解析子节点 生成配置
-         if (!cf.b[12][k]) {
-            parseChildNode($this, cf, arrconf[k].n);
 
-            let a = [cf.c];
-            while (_obj.length(a)) {
-               let c = _obj.terValues(_obj.pop(a));
-               for (let v of c) {
-                  v.s = k;
-                  console.log(v);
-                  if (_obj.size(v.c)) {
-                     _obj.push(a, v.c);
-                  }
+         // 解析子节点 生成配置
+         if (!cf.b[10][k]) {
+            parseChildNode($this, cf, arrconf[k].n);
+            cf.b[10][k] = cf.c;
+            // 清空 ifelse 的 .c 避免被外部 call 因为条件分支不是全部一起执行
+            cf.c = _obj.newMap();
+         }
+
+         // 先递归后代 修改 ifelse 后代节点的分支标记
+         let a = [cf.b[10][k]];
+         while (_obj.length(a)) {
+            let c = _obj.terValues(_obj.pop(a));
+            for (let v of c) {
+               v.r = k;
+               if (v.c && _obj.size(v.c)) {
+                  _obj.push(a, v.c);
+               }
+               if (v.d) {
+                  let l = _obj.length(v.d);
+                  while (l--) { v.d[l].r = k; }
                }
             }
-
-            console.log(cf.c);
-
-            cf.b[12][k] = cf.c;
-
-            // console.log(cf.b[12]);
-            // console.log(cf.b[12][k]);
          }
+
+         // 执行分支后代节点
+         callConfFunRec($this, cf.b[10][k], ($this, cf) => {
+            if (cf.s) {
+               assignScope($this, cf);
+            }
+         });
       });
+
+      if (realkey === _pam.gb_null) {
+         removeComOldNodes(com0, com1);
+         cf.r = _pam.gb_null;
+      }
    };
    pcf.c.set(node, conf);
 };

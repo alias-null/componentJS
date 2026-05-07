@@ -1,3 +1,7 @@
+import {
+   gb_window as window,
+   gb_document as document,
+} from "./param.js";
 
 import * as _reg from './regex.js';
 import * as _obj from "./object.js";
@@ -32,7 +36,6 @@ const parseTemplate = ($this) => {
       arr_ps_jsi,
       objtemplate
    );
-
 
    // ifelse
    for (let i = 0, il = _obj.length(arr_tempif); i < il; i++) {
@@ -124,9 +127,12 @@ const parseTemplate = ($this) => {
       }
    }
 
+   let pcf = createNodeConf($this, $this);
+   pcf.u = $this.$cf.name;
 
-   let conf = createNodeConf($this.$sd, _pam.gb_null);
-
+   let conf = createNodeConf($this.$sd, $this.$sd, pcf);
+   conf.c = _obj.newMap();
+   conf.u = _obj.nodeName($this.$sd);
    parseChildNode($this, conf, domfratop);
 
    Promise.allSettled(arr_ps_all).then(list => {
@@ -163,7 +169,7 @@ const parseTemplate = ($this) => {
       }
 
       callConfFunRec($this, new Map([[$this.$sd, conf]]), ($this, cf) => {
-         if (cf.t !== 3) {
+         if (cf.s) {
             assignScope($this, cf);
          }
       });

@@ -17,24 +17,25 @@ import parseNodeFor from './parseNodeFor.js';
  * @returns 
  */
 const parseNodeAll = ($this, pcf, node) => {
+   let name = _obj.nodeName(node);
    let type = _obj.nodeType(node);
    if (type === 1) {
       let tag = _obj.getAttribute(node, '-');
-      if (_obj.nodeName(node) === 'TEMPLATE') {
+      if (name === 'TEMPLATE') {
          if (tag === 'for') {
-            parseNodeFor($this, pcf, node);
+            parseNodeFor($this, pcf, node, tag);
          } else if (tag === 'ifelse') {
-            parseNodeIfelse($this, pcf, node);
+            parseNodeIfelse($this, pcf, node, tag);
          } else if (tag === 'switch') {
-            parseNodeSwitch($this, pcf, node);
+            parseNodeSwitch($this, pcf, node, tag);
          } else if (!pcf.c.has(node)) {
-            parseNodeElement($this, pcf, node);
+            parseNodeElement($this, pcf, node, name);
          }
       } else if (!pcf.c.has(node)) {
-         parseNodeElement($this, pcf, node);
+         parseNodeElement($this, pcf, node, name);
       }
    } else if (type === 3) {
-      parseNodeText($this, pcf, node);
+      parseNodeText($this, pcf, node, name);
    }
 };
 

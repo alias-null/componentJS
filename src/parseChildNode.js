@@ -25,11 +25,14 @@ const parseChildNode = ($this, conf, node, callbak = () => { }) => {
 
    // 避免子节点迭代动态重复计算 等迭代结束再处理子元素 
    if (conf.c) {
+      let pr = conf.r;
       for (let scf of _obj.terValues(conf.c)) {
          callbak($this, scf);
          scf.e(scf);
-         parseChildNode($this, scf, scf.m, callbak);
+         scf.c = _obj.newMap();
+         parseChildNode($this, scf, scf.n, callbak);
       }
+      // console.log(conf.c, conf.n);
    }
 };
 

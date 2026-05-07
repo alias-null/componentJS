@@ -13,9 +13,10 @@ import insertNodeAuchToNode from './insertNodeAuchToNode.js';
  * @param {HTMLElement} $this
  * @param {Number} pcf
  * @param {Node} node
+ * @param {String} name
  * @returns 
  */
-const parseNodeText = ($this, pcf, node) => {
+const parseNodeText = ($this, pcf, node, name) => {
    _obj.remove(node);
 
    let val = _obj.trim(node.nodeValue);
@@ -31,7 +32,10 @@ const parseNodeText = ($this, pcf, node) => {
    while (len--) {
       let str = val[len];
       if (str) {
-         let conf = createNodeConf(_obj.createTextNode(str), pcf, _pam.gb_null, _pam.gb_null);
+         let cnode = _obj.createTextNode(str);
+         let conf = createNodeConf(cnode, cnode, pcf);
+         conf.u = name;
+         conf.s = false;
          conf.e = insertNodeAuchToNode;
          val[len] = conf;
       } else {
@@ -47,7 +51,10 @@ const parseNodeText = ($this, pcf, node) => {
    while (len--) {
       let idx = len + 1;
       if (_obj.trim(_obj.slice(arr[len], 2, -1))) {
-         let conf = createNodeConf(_obj.createTextNode(''), pcf, _pam.gb_null, _pam.gb_null);
+         let cnode = _obj.createTextNode('');
+         let conf = createNodeConf(cnode, cnode, pcf);
+         conf.u = name;
+         conf.s = false;
          conf.b[0] = arr[len];
          conf.b[2] = `${va_arg}=\`${conf.b[0]}\`;if(${op_arg}!==${va_arg}){${op_arg}=${va_arg}`;
          conf.e = insertNodeAuchToNode;
@@ -76,7 +83,7 @@ const parseNodeText = ($this, pcf, node) => {
    for (let i = 0, l = _obj.length(val); i < l; i++) {
       let scf = val[i];
       if (scf) {
-         pcf.c.set(scf.m, scf);
+         pcf.c.set(scf.n, scf);
       }
    }
 };

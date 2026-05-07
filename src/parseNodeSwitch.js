@@ -15,9 +15,10 @@ import removeComOldNodes from './removeComOldNodes.js';
  * @param {HTMLElement} $this
  * @param {Number} pcf
  * @param {Node} node
+ * @param {String} name
  * @returns 
  */
-const parseNodeSwitch = ($this, pcf, node) => {
+const parseNodeSwitch = ($this, pcf, node, name) => {
    let _isbreak = _obj.hasAttribute(node, gb_break) ? gb_break
       : (_obj.hasAttribute(node, gb_continue) ? gb_continue : '');
 
@@ -37,36 +38,36 @@ const parseNodeSwitch = ($this, pcf, node) => {
          n: _obj.content(dom),
          c: atr ? atr : '',
          b: isbreak,
-         m: _obj.getAttribute(dom, '-'),
+         g: _obj.getAttribute(dom, '-'),
       });
    }
 
    let com0 = _obj.cloneNode(gb_domcom);
    let com1 = _obj.cloneNode(gb_domcom);
 
-   let conf = createNodeConf(com1, pcf);
-   conf.b[10] = _obj.getAttribute(node, '.');
-   conf.b[11] = arrconf;
-   conf.b[20] = com0;
-   conf.b[21] = com1;
+   let conf = createNodeConf(com1, node, pcf);
+   conf.u = name;
+   conf.b[0] = arrconf;
+   conf.b[1] = _obj.getAttribute(node, '.');
+   conf.b[8] = { s: com0, e: com1 };
    conf.e = insertCommAuchToNode;
    conf.f = ($this, cf) => {
-      let prop = cf.b[10];
-      let arrconf = cf.b[11];
-      let com0 = cf.b[20];
-      let com1 = cf.b[21];
+      let prop = cf.b[1];
+      let arrconf = cf.b[0];
+      let com0 = cf.b[8].s;
+      let com1 = cf.b[8].e;
 
       if (!cf.b[9]) {
          let aks = _obj.keys(cf.a);
          let sexp = codeExpScope(aks, 0);
-         let loop = _reg.reg3.test(cf.b[10])
+         let loop = _reg.reg3.test(cf.b[1])
             ? codeAssignToPcf(aks, 0) : '';
 
          let code = [];
          for (let i = 0, l = _obj.length(arrconf); i < l; i++) {
             let obj = arrconf[i];
             let lop = obj.b ? loop : (i + 1 === l ? loop : '');
-            _obj.push(code, `${obj.m}\x20${obj.c}:${lop}${gb_arg1}(${i});${obj.b}`);
+            _obj.push(code, `${obj.g}\x20${obj.c}:${lop}${gb_arg1}(${i});${obj.b}`);
          }
 
          cf.b[9] =

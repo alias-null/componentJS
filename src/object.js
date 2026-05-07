@@ -23,7 +23,6 @@ export const push = (a, b) => a.push(b);
 export const join = (a, b) => a.join(b);
 export const indexOf = (a, b) => a.indexOf(b);
 export const lastIndexOf = (a, b) => a.lastIndexOf(b);
-
 export const assign = (a, b) => Object.assign(a, b);
 export const get = (a, b) => a.get(b);
 export const set = (a, b, c) => a.set(b, c);
@@ -34,6 +33,11 @@ export const filter = (a, b, c) => a.filter(b, c);
 export const substring = (a, b, c) => a.substring(b, c);
 export const replace = (a, b, c) => a.replace(b, c);
 export const replaceAll = (a, b, c) => a.replaceAll(b, c);
+export const newMap = () => new Map();
+export const newSet = () => new Set();
+export const newWeakMap = () => new WeakMap();
+export const newWeakSet = () => new WeakSet();
+
 
 // 验证
 export const isArr = (a) => Array.isArray(a);
