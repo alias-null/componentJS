@@ -47,7 +47,6 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
    conf.b[0] = arrconf;
    conf.b[8] = { s: com0, e: com1 };
    conf.b[10] = {};
-   conf.b[11] = _pam.gb_null;
    conf.e = insertCommAuchToNode;
    conf.f = ($this, cf) => {
       let arrconf = cf.b[0];
@@ -65,8 +64,7 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
          for (let i = 0, l = _obj.length(arrconf); i < l; i++) {
             let obj = arrconf[i];
             if (obj.c) {
-               let loop = _obj.test(_reg.reg3, obj.c)
-                  ? codeAssignToPcf(aks, 0) : '';
+               let loop = _obj.test(_reg.reg3, obj.c) ? codeAssignToPcf(aks, 0) : '';
                let loopf = loop ? `||(function(){${loop}}).call(this,${ag0})` : '';
                _obj.push(code, `${obj.g}(${obj.c}${loopf}){${loop}${ag1}(${i});${obj.b}}`);
             } else {
@@ -81,10 +79,10 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
             _obj.func(`${sexp}${_obj.join(code, '')}`);
       }
 
-      let realkey = _pam.gb_null;
+      let targetkey = _pam.gb_null;
       cf.b[9].call($this, cf, (k) => {
-         realkey = k;
-         console.log('ifelse ==>>', k);
+         targetkey = k;
+
          // 设置 ifelse 节点的分支标记
          if (cf.r !== k) {
             // 等于 true 说明是初始的状况
@@ -144,7 +142,7 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
          });
       });
 
-      if (realkey === _pam.gb_null) {
+      if (targetkey === _pam.gb_null) {
          removeComOldNodes(com0, com1);
          cf.r = _pam.gb_null;
       }
