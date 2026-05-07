@@ -25,7 +25,7 @@ const parseNodeText = ($this, pcf, node) => {
       _obj.push(arr, m);
       return '${}';
    });
-   val = val.split(_reg.reg2);
+   val = _obj.split(val, _reg.reg2);
 
    len = _obj.length(val);
    while (len--) {

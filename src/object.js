@@ -29,6 +29,8 @@ export const get = (a, b) => a.get(b);
 export const set = (a, b, c) => a.set(b, c);
 export const apply = (a, b, c) => a.apply(b, c);
 export const slice = (a, b, c) => a.slice(b, c);
+export const split = (a, b, c) => a.split(b, c);
+export const filter = (a, b, c) => a.filter(b, c);
 export const substring = (a, b, c) => a.substring(b, c);
 export const replace = (a, b, c) => a.replace(b, c);
 export const replaceAll = (a, b, c) => a.replaceAll(b, c);
