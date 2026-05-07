@@ -8,11 +8,11 @@ import * as _pam from './param.js';
  * @param {HTMLElement} $this 
  * @param {Map} mapcf 
  */
-const callConfRec_f = ($this, mapcf, callfn = () => { }) => {
+const callConfFunRec = ($this, mapcf, callbak = () => { }) => {
    if (mapcf) {
       let values = _obj.terValues(mapcf);
       for (let conf of values) {
-         callfn($this, conf);
+         callbak($this, conf);
          $this.$fc = conf;
          conf.f($this, conf);
          $this.$fc = _pam.gb_null;
@@ -27,9 +27,9 @@ const callConfRec_f = ($this, mapcf, callfn = () => { }) => {
             }
          }
 
-         callConfRec_f($this, conf.c, callfn);
+         callConfFunRec($this, conf.c, callbak);
       }
    }
 };
 
-export default callConfRec_f;
+export default callConfFunRec;

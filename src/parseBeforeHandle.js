@@ -44,19 +44,17 @@ const parseBeforeHandle = ($this, node, arrps, arrjsi, objtemp) => {
                , txt = _obj.trim(_obj.textContent(node));
             if (!!src) {
                let s = new URL(src, $this.$cf.base), h = _obj.href(s);
-               if (typ === 'module'
-                  && _pam.gb_modules.get(h) === _pam.gb_undf) {
+               if (typ === 'module' && _pam.gb_modules.get(h) === _pam.gb_undf) {
                   _obj.push(
                      arrps,
                      import(h).then(m => {
-                        let res = { s: src, h };
+                        let res = { s: src, o: {}, h };
                         if (m.default !== _pam.gb_undf) {
                            res.o = m.default;
                            return res;
                         }
                         let arrkey = _obj.keys(m);
                         if (_obj.length(arrkey) > 0) {
-                           res.o = {};
                            for (let j = 0, jl = _obj.length(arrkey); j < jl; j++) {
                               res.o[arrkey[j]] = m[arrkey[j]];
                            }

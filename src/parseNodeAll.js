@@ -7,6 +7,7 @@ import createNodeConf from './createNodeConf.js';
 import insertCommAuchToNode from './insertCommAuchToNode.js';
 import insertNodeAuchToNode from './insertNodeAuchToNode.js';
 import codeExpScope from './codeExpScope.js';
+import codeAssignToPcf from './codeAssignToPcf.js';
 import removeComOldNodes from './removeComOldNodes.js';
 import parseChildNode from './parseChildNode.js';
 import parseNodeElement from './parseNodeElement.js';

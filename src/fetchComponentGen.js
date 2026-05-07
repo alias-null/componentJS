@@ -32,7 +32,7 @@ const fetchComponentGen = (doc) => {
                if (res === _pam.gb_null) {
                   return _pam.gb_null;
                }
-               if (customElements.get(name) !== _pam.gb_undf) {
+               if (_pam.gb_customElements.get(name) !== _pam.gb_undf) {
                   return _pam.gb_null;
                }
                const domtemp = _obj.createElement(_pam.gb_template);

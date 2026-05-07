@@ -6,6 +6,7 @@ import * as _pam from './param.js';
 import createNodeConf from './createNodeConf.js';
 import insertNodeAuchToNode from './insertNodeAuchToNode.js';
 import codeExpScope from './codeExpScope.js';
+import codeAssignToPcf from './codeAssignToPcf.js';
 
 /**
  * 

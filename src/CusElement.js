@@ -17,7 +17,7 @@ class CusElement extends HTMLElement {
    constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-      let class_old = customElements.get(
+      let class_old = _pam.gb_customElements.get(
          _obj.toLowerCase(_obj.nodeName(this))
       );
       this.$cf = class_old.$cf;

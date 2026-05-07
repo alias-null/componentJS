@@ -10,8 +10,9 @@ import parseNodeAll from './parseNodeAll.js';
  * @param {HTMLElement} $this 
  * @param {Object} conf
  * @param {Node} node
+ * @param {Function} callbak
  */
-const parseChildNode = ($this, conf, node, callfn = () => { }) => {
+const parseChildNode = ($this, conf, node, callbak = () => { }) => {
    let nodelist = _obj.childNodes(node);
    let arr = [];
    for (let i = 0, l = _obj.length(nodelist); i < l; i++) {
@@ -25,9 +26,9 @@ const parseChildNode = ($this, conf, node, callfn = () => { }) => {
    // 避免子节点迭代动态重复计算 等迭代结束再处理子元素 
    if (conf.c) {
       for (let scf of _obj.terValues(conf.c)) {
-         callfn($this, scf);
+         callbak($this, scf);
          scf.e(scf);
-         parseChildNode($this, scf, scf.m, callfn);
+         parseChildNode($this, scf, scf.m, callbak);
       }
    }
 };

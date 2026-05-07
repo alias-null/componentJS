@@ -3,6 +3,8 @@ import * as _reg from './regex.js';
 import * as _obj from "./object.js";
 import * as _pam from './param.js';
 
+import callPxyConfRec from './callPxyConfRec.js';
+
 /**
  * 
  * @param {HTMLElement} $this 
@@ -15,9 +17,9 @@ const createProxy = ($this, data) => {
       // 拦截 deleteProperty（delete 操作）
       deleteProperty(target, key) {
          let res = Reflect.deleteProperty(target, key);
-         log('deleteProperty setter',);
+         console.log('deleteProperty setter',);
 
-         callConf_f($this, target);
+         callPxyConfRec($this, target);
 
          return res;
       }
@@ -25,9 +27,9 @@ const createProxy = ($this, data) => {
       // // 拦截 defineProperty（Object.defineProperty）
       // , defineProperty(target, key, descriptor) {
       //    let res = Reflect.defineProperty(target, key, descriptor);
-      //    log('defineProperty setter',);
+      //    console.log('defineProperty setter',);
 
-      //    callConf_f($this, target);
+      //    callPxyConfRec($this, target);
 
       //    return res;
       // }
@@ -38,15 +40,15 @@ const createProxy = ($this, data) => {
          }
 
          let val = target[key];
-         // log('getter',);
+         // console.log('getter',);
 
          if (_obj.isFun(val)) {
             if (_pam.gb_mutating_mth.has(key)) {
                return function () {
-                  // log(`function ${key} setter`,);
+                  // console.log(`function ${key} setter`,);
                   let res = val.apply(target, arguments);
 
-                  callConf_f($this, target);
+                  callPxyConfRec($this, target);
 
                   return res;
                };
@@ -120,10 +122,10 @@ const createProxy = ($this, data) => {
       }
 
       , set(target, key, val, receiver) {
-         log('setter',);
+         console.log('setter',);
          let res = Reflect.set(target, key, val, receiver);
 
-         callConf_f($this, target);
+         callPxyConfRec($this, target);
 
          return res;
       }

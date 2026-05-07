@@ -23,7 +23,7 @@ const defineElementClass = (objurl, tagname, domtemp, sethref = true) => {
       name: tagname,
       temp: domtemp,
    };
-   customElements.define(tagname, Component);
+   _pam.gb_customElements.define(tagname, Component);
 };
 
 export default defineElementClass;

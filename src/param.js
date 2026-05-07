@@ -1,9 +1,10 @@
 
-
+const $null = () => null;
 export const gb_window = window;
 export const gb_document = document;
+export const gb_customElements = customElements;
 export const gb_undf = gb_document[gb_window];
-export const gb_null = null;
+export const gb_null = $null();
 
 export const gb_event_once_conf = { once: true, capture: true };
 export const gb_dom_obs_conf = { childList: true, subtree: true };

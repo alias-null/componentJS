@@ -8,7 +8,7 @@ import * as _pam from './param.js';
  * @param {HTMLElement} $this 
  * @param {Proxy} target 
  */
-const callConf_f = ($this, target) => {
+const callPxyConfRec = ($this, target) => {
    console.log(
       $this.$fp
    );
@@ -17,4 +17,4 @@ const callConf_f = ($this, target) => {
    // );
 };
 
-export default callConf_f;
+export default callPxyConfRec;

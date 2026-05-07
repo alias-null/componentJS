@@ -23,7 +23,11 @@ export const push = (a, b) => a.push(b);
 export const join = (a, b) => a.join(b);
 export const indexOf = (a, b) => a.indexOf(b);
 export const lastIndexOf = (a, b) => a.lastIndexOf(b);
+
 export const assign = (a, b) => Object.assign(a, b);
+export const get = (a, b) => a.get(b);
+export const set = (a, b, c) => a.set(b, c);
+export const apply = (a, b, c) => a.apply(b, c);
 export const slice = (a, b, c) => a.slice(b, c);
 export const substring = (a, b, c) => a.substring(b, c);
 export const replace = (a, b, c) => a.replace(b, c);
