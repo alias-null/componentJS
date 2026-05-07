@@ -1,33 +1,65 @@
 <script>
    const { val, called } = this;
-   var param = val(3);
+   var param = val(1);
+   var param1 = val(0);
+
+   // setTimeout(() => {
+   //    param.val++;
+   // }, 500);
 
    // setInterval(() => {
-   //    param.val++;
-   //    if (param.val > 4) {
-   //       param.val = 0;
+   //    if (param1.val > 4) {
+   //       param1.val = 0;
+   //    } else {
+   //       param1.val++;
    //    }
    // }, 1000);
 
    return {
       param,
+      param1,
    };
 </script>
 
 <!-- if else 之间为无效 将被删除 -->
-<h3 .="style.border=`${param.val}px solid red`">
-   ${param.val} 111 ${param.val} 222 ${param.val}
-</h3>
+<!-- <h3>1</h3>
+<h3>2</h3>
+<h3>3</h3>
+<h3>4</h3> -->
 
-789789
-789789 ${param.val}
+<!-- <h3 .="style.border=`${param.val}px solid red`;style.outline=`${param.val}px dashed blue`">
+   [${param.val}] > 111 [${param.val}] > 222 > [${param.val}]
+</h3> -->
+
+<!-- <h3 .="style.border=`${param.val}px solid red`;">[${param1.val}]</h3> -->
+<!-- <h3 .="style.border=`${param.val}px solid red`;"></h3> -->
+<!-- 567567 > [${param.val}] <br> -->
+<!-- 789789 > [${param.val}] <br>
 
 <h2>123</h2>
 123123
-<h2>789</h2>
-
+<h2>789</h2> -->
 
 <if .="param.val==0">
+   <div .="style.border=`${param1.val+3}px solid blue`">if-1-${param1.val}</div>
+   <!-- <div .="innerText=`if-1-${param1.val}`;style.border=`${param1.val+3}px solid blue`"></div> -->
+</if>123123
+123123
+<h1>123123</h1>
+<else .="param.val==1">
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param1.val+3}px solid green`"></div>
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param1.val+3}px solid green`"></div>
+</else>
+
+<!-- 123123
+123123
+<h1>123123</h1>
+<else .="param.val==1">
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param1.val+3}px solid green`"></div>
+   <div .="innerText=`if-1-${param.val}`;style.border=`${param1.val+3}px solid green`"></div>
+</else> -->
+
+<!-- <if .="param.val==0">
    <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid blue`"></div>
 </if>
 123123
@@ -53,9 +85,9 @@
 <h1>123123</h1>
 <else>
    <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid red`"></div>
-</else>
+</else> -->
 
-<switch .="param.val" break>
+<!-- <switch .="param.val" break>
    <case .="0">
       <h1 .="id=param.val;style.border=`${param.val+2}px solid blue`">${param.val}</h1>
    </case>
@@ -74,4 +106,4 @@
    <DEFAULT break>
       <h6 .="id=param.val;style.border=`${param.val+2}px solid rgb(0, 255, 251)`">${param.val}</h6>
    </DEFAULT>
-</switch>
+</switch> -->

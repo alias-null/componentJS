@@ -6,20 +6,42 @@ import {
 // Object
 const objectPrototypeTostring = Object.prototype.toString;
 
+export const promiseResolve = (a) => Promise.resolve(a);
+export const func = (a) => Function(a);
 export const getType = (a) => slice(objectPrototypeTostring.call(a), 8, -1);
 export const href = (a) => a.href;
 export const size = (a) => a.size;
 export const length = (a) => a.length;
 export const trim = (a) => a.trim();
-export const pop = (a) => a.pop();
-export const push = (a, b) => a.push(b);
+export const terkeys = (a) => a.keys();
+export const terValues = (a) => a.values();
 export const toLowerCase = (a) => a.toLowerCase();
 export const toUpperCase = (a) => a.toUpperCase();
+export const keys = (a) => Object.keys(a);
+export const pop = (a) => a.pop();
+export const push = (a, b) => a.push(b);
+export const join = (a, b) => a.join(b);
 export const indexOf = (a, b) => a.indexOf(b);
 export const lastIndexOf = (a, b) => a.lastIndexOf(b);
-export const keys = (a) => Object.keys(a);
 export const assign = (a, b) => Object.assign(a, b);
 export const slice = (a, b, c) => a.slice(b, c);
+export const substring = (a, b, c) => a.substring(b, c);
+export const replace = (a, b, c) => a.replace(b, c);
+export const replaceAll = (a, b, c) => a.replaceAll(b, c);
+
+// 验证
+export const isArr = (a) => Array.isArray(a);
+export const isMap = (a) => getType(a) === 'Map';
+export const isSet = (a) => getType(a) === 'Set';
+export const isStr = (a) => typeof a === 'string';
+export const isObj = (a) => getType(a) === 'Object';
+export const isFun = (a) => getType(a) === 'Function';
+export const isPxy = (a) => indexOf(getType(a), 'Proxy') === 0;
+export const isWmap = (a) => getType(a) === 'WeakMap';
+export const isWset = (a) => getType(a) === 'WeakSet';
+
+// string 
+export const arg = (a) => `arguments[${a}]`;
 
 // Node 
 export const content = (a) => a.content;
@@ -45,8 +67,14 @@ export const removeAttribute = (a, b) => a.removeAttribute(b);
 export const setAttribute = (a, b, c) => a.setAttribute(b, c);
 export const querySelector = (a, b) => a.querySelector(b);
 export const querySelectorAll = (a, b) => a.querySelectorAll(b);
+export const addEventListener = (a, b, c, d) => a.addEventListener(b, c, d);
 export const getAttributeRemove = (a, b) => {
    let s = getAttribute(a, b);
    removeAttribute(a, b);
    return s;
 };
+
+// regex
+export const test = (a, b) => a.test(b);
+export const match = (a, b) => b.match(a);
+export const matchAll = (a, b) => b.matchAll(a);

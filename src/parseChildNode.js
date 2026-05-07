@@ -1,0 +1,35 @@
+
+import * as _reg from './regex.js';
+import * as _obj from "./object.js";
+import * as _pam from './param.js';
+
+import parseNodeAll from './parseNodeAll.js';
+
+/**
+ * 
+ * @param {HTMLElement} $this 
+ * @param {Object} conf
+ * @param {Node} node
+ */
+const parseChildNode = ($this, conf, node, callfn = () => { }) => {
+   let nodelist = _obj.childNodes(node);
+   let arr = [];
+   for (let i = 0, l = _obj.length(nodelist); i < l; i++) {
+      arr[i] = nodelist[i];
+   }
+
+   for (let i = 0, l = _obj.length(arr); i < l; i++) {
+      parseNodeAll($this, conf, arr[i]);
+   }
+
+   // 避免子节点迭代动态重复计算 等迭代结束再处理子元素 
+   if (conf.c) {
+      for (let scf of _obj.terValues(conf.c)) {
+         callfn($this, scf);
+         scf.e(scf);
+         parseChildNode($this, scf, scf.m, callfn);
+      }
+   }
+};
+
+export default parseChildNode;
