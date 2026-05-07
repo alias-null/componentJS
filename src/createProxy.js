@@ -3,7 +3,7 @@ import * as _reg from './regex.js';
 import * as _obj from "./object.js";
 import * as _pam from './param.js';
 
-import callPxyConfRec from './callPxyConfRec.js';
+import callConfProxy from './callConfProxy.js';
 
 /**
  * 
@@ -17,7 +17,7 @@ const createProxy = ($this, data) => new Proxy(data, {
       let res = Reflect.deleteProperty(target, key);
       console.log('deleteProperty setter',);
 
-      callPxyConfRec($this, $this.$fp.get(target));
+      callConfProxy($this, $this.$fp.get(target));
 
       return res;
    }
@@ -27,7 +27,7 @@ const createProxy = ($this, data) => new Proxy(data, {
    //    let res = Reflect.defineProperty(target, key, descriptor);
    //    console.log('defineProperty setter',);
 
-   //    callPxyConfRec($this, $this.$fp.get(target));
+   //    callConfProxy($this, $this.$fp.get(target));
 
    //    return res;
    // }
@@ -46,7 +46,7 @@ const createProxy = ($this, data) => new Proxy(data, {
                // console.log(`function ${key} setter`,);
                let res = val.apply(target, arguments);
 
-               callPxyConfRec($this, $this.$fp.get(target));
+               callConfProxy($this, $this.$fp.get(target));
 
                return res;
             };
@@ -127,7 +127,7 @@ const createProxy = ($this, data) => new Proxy(data, {
       // console.log('setter',);
       let res = Reflect.set(target, key, val, receiver);
 
-      callPxyConfRec($this, $this.$fp.get(target));
+      callConfProxy($this, $this.$fp.get(target));
 
       return res;
    }

@@ -1,111 +1,47 @@
 <script>
-   const { val, called } = this;
+   const { val } = this;
    var param = val(0);
-   var param1 = val(0);
 
-   setTimeout(() => {
-      param.val = 2;
-   }, 500);
-
-   setTimeout(() => {
-      param.val = 1;
+   setInterval(() => {
+      if (param.val > 4) {
+         param.val = 0;
+      } else {
+         param.val++;
+      }
    }, 1000);
-
-   setTimeout(() => {
-      param.val = 0;
-   }, 1500);
-
-   // setTimeout(() => {
-   //    param1.val++;
-   // }, 1000);
-
-   // setInterval(() => {
-   //    if (param.val > 4) {
-   //       param.val = 0;
-   //    } else {
-   //       param.val++;
-   //    }
-   // }, 1000);
 
    return {
       param,
-      param1,
    };
 </script>
 
-<!-- if else 之间为无效 将被删除 -->
 <h5>if else 之间为无效 将被删除</h5>
 param => [${param.val}] <br>
-param1 => [${param1.val}] <br>
-<!-- <h3 .="style.border=`${param.val}px solid red`;">border=[param] | param1 => [${param1.val}]</h3> -->
-<!-- <h3 .="style.border=`${param.val}px solid red`;">border=[param]</h3> -->
-
 
 <if .="param.val==0">
-   <div .="style.border=`${param1.val+3}px solid blue`">
-      border=[param1] | if => ${param1.val}
-   </div>
-   <div .="innerText=`border=[param1] | if-1-${param1.val}`;style.border=`${param1.val+3}px solid blue`">
-   </div>
-</if>
-<else .="param.val==1">
-   <div .="style.border=`${param1.val+3}px solid green`">border=[param1] | else-if => ${param1.val}</div>
-   <div .="innerText=`else-if-1-${param.val}`;style.border=`${param1.val+3}px solid green`"></div>
-</else>
-
-<!-- 123123
-123123
-<h1>123123</h1>
-<else .="param.val==1">
-   <div .="innerText=`if-1-${param.val}`;style.border=`${param1.val+3}px solid green`"></div>
-   <div .="innerText=`if-1-${param.val}`;style.border=`${param1.val+3}px solid green`"></div>
-</else> -->
-
-<!-- <if .="param.val==0">
-   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid blue`"></div>
+   <div .="innerText=`if-${param.val}`;style.border=`${param.val+3}px solid blue`"></div>
 </if>
 123123
 123123
 <h1>123123</h1>
 <else .="param.val==1">
-   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid green`"></div>
+   <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid green`"></div>
 </else>
 123123
 123123
 <h1>123123</h1>
 <else .="param.val==2">
-   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid yellow`"></div>
+   <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid yellow`"></div>
 </else>
 123123
 123123
 <h1>123123</h1>
 <else .="param.val==3">
-   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid orchid`"></div>
+   <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid orchid`"></div>
 </else>
 123123
 123123
 <h1>123123</h1>
 <else>
-   <div .="innerText=`if-1-${param.val}`;style.border=`${param.val+3}px solid red`"></div>
-</else> -->
-
-<!-- <switch .="param.val" break>
-   <case .="0">
-      <h1 .="id=param.val;style.border=`${param.val+2}px solid blue`">${param.val}</h1>
-   </case>
-   <case .="1">
-      <h2 .="id=param.val;style.border=`${param.val+2}px solid green`">${param.val}</h2>
-   </case>
-   <case .="2">
-      <h3 .="id=param.val;style.border=`${param.val+2}px solid yellow`">${param.val}</h3>
-   </case>
-   <case .="3">
-      <h4 .="id=param.val;style.border=`${param.val+2}px solid red`">${param.val}</h4>
-   </case>
-   <case .="4">
-      <h5 .="id=param.val;style.border=`${param.val+2}px solid orchid`">${param.val}</h5>
-   </case>
-   <DEFAULT break>
-      <h6 .="id=param.val;style.border=`${param.val+2}px solid rgb(0, 255, 251)`">${param.val}</h6>
-   </DEFAULT>
-</switch> -->
+   <div .="innerText=`else-${param.val}`;style.border=`${param.val+3}px solid red`"></div>
+</else>

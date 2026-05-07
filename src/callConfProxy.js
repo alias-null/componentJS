@@ -8,10 +8,9 @@ import * as _pam from './param.js';
  * @param {HTMLElement} $this 
  * @param {Proxy} objcf 
  */
-const callPxyConfRec = ($this, objcf, callbak = () => { }) => {
+const callConfProxy = ($this, objcf, callbak = () => { }) => {
    if (objcf && _obj.size(objcf)) {
-      let ter = _obj.terValues(objcf);
-      for (let conf of ter) {
+      for (let conf of _obj.terValues(objcf)) {
          // console.log('PxyCall before>>', conf, 'r>>', conf.r);
 
          if (conf.p.r === true || conf.r === conf.p.r) {
@@ -25,4 +24,4 @@ const callPxyConfRec = ($this, objcf, callbak = () => { }) => {
    }
 };
 
-export default callPxyConfRec;
+export default callConfProxy;

@@ -9,7 +9,7 @@ import * as _pam from './param.js';
 
 import fetchComponentGen from './fetchComponentGen.js';
 import parseBeforeHandle from './parseBeforeHandle.js';
-import callConfFunRec from './callConfFunRec.js';
+import callConfRecF from './callConfRecF.js';
 import createNodeConf from './createNodeConf.js';
 import parseChildNode from './parseChildNode.js';
 import assignScope from './assignScope.js';
@@ -168,7 +168,7 @@ const parseTemplate = ($this) => {
          }
       }
 
-      callConfFunRec($this, new Map([[$this.$sd, conf]]), ($this, cf) => {
+      callConfRecF($this, new Map([[$this.$sd, conf]]), ($this, cf) => {
          if (cf.s) {
             assignScope($this, cf);
          }

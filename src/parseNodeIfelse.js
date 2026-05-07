@@ -1,4 +1,3 @@
-
 import * as _reg from './regex.js';
 import * as _obj from "./object.js";
 import * as _pam from './param.js';
@@ -9,7 +8,7 @@ import codeAssignToPcf from './codeAssignToPcf.js';
 import removeComOldNodes from './removeComOldNodes.js';
 import parseChildNode from './parseChildNode.js';
 import insertCommAuchToNode from './insertCommAuchToNode.js';
-import callConfFunRec from './callConfFunRec.js';
+import callConfRecF from './callConfRecF.js';
 import assignScope from './assignScope.js';
 
 /**
@@ -102,26 +101,43 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
             cf.b[10][k] = cf.c;
             // 清空 ifelse 的 .c 避免被外部 call 因为条件分支不是全部一起执行
             cf.c = _obj.newMap();
+         } else {
+            // 缓存节点 需要重新执行 e 因为非缓存节点在解析时执行
+
+            let a = [cf.b[10][k]];
+            while (_obj.length(a)) {
+               let objcf = _obj.pop(a);
+               if (objcf && _obj.size(objcf)) {
+                  for (let scf of _obj.terValues(objcf)) {
+                     scf.e(scf);
+                     if (scf.c && _obj.size(scf.c)) {
+                        _obj.push(a, scf.c);
+                     }
+                  }
+               }
+            }
          }
 
          // 先递归后代 修改 ifelse 后代节点的分支标记
          let a = [cf.b[10][k]];
          while (_obj.length(a)) {
-            let c = _obj.terValues(_obj.pop(a));
-            for (let v of c) {
-               v.r = k;
-               if (v.c && _obj.size(v.c)) {
-                  _obj.push(a, v.c);
-               }
-               if (v.d) {
-                  let l = _obj.length(v.d);
-                  while (l--) { v.d[l].r = k; }
+            let objcf = _obj.pop(a);
+            if (objcf && _obj.size(objcf)) {
+               for (let scf of _obj.terValues(objcf)) {
+                  scf.r = k;
+                  if (scf.c && _obj.size(scf.c)) {
+                     _obj.push(a, scf.c);
+                  }
+                  if (scf.d) {
+                     let l = _obj.length(scf.d);
+                     while (l--) { scf.d[l].r = k; }
+                  }
                }
             }
          }
 
          // 执行分支后代节点
-         callConfFunRec($this, cf.b[10][k], ($this, cf) => {
+         callConfRecF($this, cf.b[10][k], ($this, cf) => {
             if (cf.s) {
                assignScope($this, cf);
             }
