@@ -8,13 +8,13 @@ const promiseDomOnLoad = (a) => new Promise((resolve, reject) => {
       a,
       'load',
       () => resolve(a),
-      _pam.gb_event_once_conf
+      _pam.o_eventconf
    );
    _obj.addEventListener(
       a,
       'error',
       () => reject(a),
-      _pam.gb_event_once_conf
+      _pam.o_eventconf
    );
 });
 

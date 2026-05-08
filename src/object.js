@@ -1,7 +1,9 @@
 import {
-   gb_window as window,
-   gb_document as document,
+   o_window as window,
+   o_document as document,
 } from "./param.js";
+
+import * as _pam from './param.js';
 
 // Object
 const objectPrototypeTostring = Object.prototype.toString;
@@ -43,12 +45,12 @@ export const newWeakSet = () => new WeakSet();
 
 // 验证
 export const isArr = (a) => Array.isArray(a);
-export const isMap = (a) => getType(a) === 'Map';
-export const isSet = (a) => getType(a) === 'Set';
+export const isMap = (a) => getType(a) === _pam.s_Map;
+export const isSet = (a) => getType(a) === _pam.s_Set;
 export const isStr = (a) => typeof a === 'string';
-export const isObj = (a) => getType(a) === 'Object';
-export const isFun = (a) => getType(a) === 'Function';
-export const isPxy = (a) => indexOf(getType(a), 'Proxy') === 0;
+export const isObj = (a) => getType(a) === _pam.s_Object;
+export const isFun = (a) => getType(a) === _pam.s_Function;
+export const isPxy = (a) => indexOf(getType(a), _pam.s_Proxy) === 0;
 export const isWmap = (a) => getType(a) === 'WeakMap';
 export const isWset = (a) => getType(a) === 'WeakSet';
 

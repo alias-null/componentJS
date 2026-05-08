@@ -18,12 +18,12 @@ const defineElementClass = (objurl, tagname, domtemp, sethref = true) => {
       , file = _obj.replace(objurl.pathname, /[\/]+/g, '/');
    Component.$cf = {
       base: orig + _obj.slice(file, 0, _obj.lastIndexOf(file, '/') + 1),
-      href: sethref ? (orig + file) : _pam.gb_undf,
-      attr: _pam.gb_attrname,
+      href: sethref ? (orig + file) : _pam.o_undf,
+      attr: _pam.s_attrname,
       name: tagname,
       temp: domtemp,
    };
-   _pam.gb_customElements.define(tagname, Component);
+   _pam.o_customElements.define(tagname, Component);
 };
 
 export default defineElementClass;

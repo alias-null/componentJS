@@ -21,16 +21,16 @@ import assignScope from './assignScope.js';
  * @returns 
  */
 const parseNodeSwitch = ($this, pcf, node, name) => {
-   let _isbreak = _obj.hasAttribute(node, _pam.gb_break) ? _pam.gb_break
-      : (_obj.hasAttribute(node, _pam.gb_continue) ? _pam.gb_continue : '');
+   let _isbreak = _obj.hasAttribute(node, _pam.s_break) ? _pam.s_break
+      : (_obj.hasAttribute(node, _pam.s_continue) ? _pam.s_continue : '');
 
    let nodelist = _obj.childNodes(_obj.content(node));
    let arrconf = [];
    for (let i = 0, il = _obj.length(nodelist); i < il; i++) {
       let dom = nodelist[i];
       let atr = _obj.getAttribute(dom, '.');
-      let isbreak = _obj.hasAttribute(dom, _pam.gb_break) ? _pam.gb_break
-         : (_obj.hasAttribute(dom, _pam.gb_continue) ? _pam.gb_continue : _isbreak);
+      let isbreak = _obj.hasAttribute(dom, _pam.s_break) ? _pam.s_break
+         : (_obj.hasAttribute(dom, _pam.s_continue) ? _pam.s_continue : _isbreak);
       if (isbreak) {
          isbreak += ';';
       }
@@ -43,15 +43,15 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
       });
    }
 
-   let com0 = _obj.cloneNode(_pam.gb_domcom);
-   let com1 = _obj.cloneNode(_pam.gb_domcom);
+   let com0 = _obj.cloneNode(_pam.o_comment);
+   let com1 = _obj.cloneNode(_pam.o_comment);
 
    let conf = createNodeConf(com1, node, pcf);
    conf.u = name;
    conf.b[0] = arrconf;
    conf.b[1] = _obj.getAttribute(node, '.');
    conf.b[8] = { s: com0, e: com1 };
-   conf.b[10] = {};
+   conf.b[10] = [];
    conf.e = insertCommAuchToNode;
    conf.f = ($this, cf) => {
       let arrconf = cf.b[0];
@@ -77,7 +77,7 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
             _obj.func(`${sexp}switch(${prop}){${_obj.join(code, '')}}`);
       }
 
-      let targetkey = _pam.gb_null;
+      let targetkey = _pam.o_null;
       cf.b[9].call($this, cf, (k) => {
          targetkey = k;
 
@@ -140,9 +140,9 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
       });
 
       // 所有分支都没有命中
-      if (targetkey === _pam.gb_null) {
+      if (targetkey === _pam.o_null) {
          removeComOldNodes(com0, com1);
-         cf.r = _pam.gb_null;
+         cf.r = _pam.o_null;
       }
    };
    pcf.c.set(node, conf);

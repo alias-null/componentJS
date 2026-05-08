@@ -10,18 +10,20 @@ import * as _pam from './param.js';
  * @returns {Array|Null}
  */
 const forGetTypeLen = (a) => {
-   let t = _obj.getType(a).replace('Proxy', '');
+   let t = _obj.getType(a).replace(_pam.s_Proxy, '');
    switch (t) {
-      case 'Map': return [t, _obj.size(a)];
-      case 'Set': return [t, _obj.size(a)];
-      case 'Array': return [t, _obj.length(a)];
-      case 'Object': return [t, _obj.length(_obj.keys(a))];
-      case 'String': return [t, _obj.length(a)];
-      case 'Number': // 数字只能从 0 开始
-         return Number.isNaN(a) || a < 0 ? _pam.gb_null : [t, a];
+      case _pam.s_Map:
+      case _pam.s_Set: return [t, _obj.size(a)];
+      case _pam.s_Object:
+         a = _obj.keys(a);
+      case _pam.s_Array:
+      case _pam.s_String: return [t, _obj.length(a)];
+      case _pam.s_Number: // 数字只能从 0 开始
+         return Number.isNaN(a) || a < 0 ? _pam.o_null : [t, a];
       default:
-         let i = _obj.indexOf(t, 'Array');
-         return i > -1 ? [_obj.substring(t, i), _obj.length(a)] : _pam.gb_null;
+         t = t.slice(-5);
+         return t === _pam.s_Array
+            ? [t, _obj.length(a)] : _pam.o_null;
    }
 };
 

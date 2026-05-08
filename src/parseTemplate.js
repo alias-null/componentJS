@@ -1,6 +1,6 @@
 import {
-   gb_window as window,
-   gb_document as document,
+   o_window as window,
+   o_document as document,
 } from "./param.js";
 
 import * as _reg from './regex.js';
@@ -13,6 +13,7 @@ import callConfRecF from './callConfRecF.js';
 import createNodeConf from './createNodeConf.js';
 import parseChildNode from './parseChildNode.js';
 import assignScope from './assignScope.js';
+import forGetTypeLen from "./forGetTypeLen.js";
 
 /**
  * 
@@ -41,8 +42,8 @@ const parseTemplate = ($this) => {
    for (let i = 0, il = _obj.length(arr_tempif); i < il; i++) {
       let dom_a = arr_tempif[i];
       let arrdelete = [];
-      let domtarget = _pam.gb_null;
-      let domcontent = _pam.gb_null;
+      let domtarget = _pam.o_null;
+      let domcontent = _pam.o_null;
       while (dom_a) {
          let dom = dom_a;
          let typ = _obj.nodeType(dom);
@@ -53,7 +54,7 @@ const parseTemplate = ($this) => {
                let l = _obj.length(arrdelete);
                while (l--) { _obj.remove(arrdelete[l]); }
                arrdelete = [];
-               if (tag === 'if' && domtarget === _pam.gb_null) {
+               if (tag === 'if' && domtarget === _pam.o_null) {
                   domtarget = _obj.cloneNode($this.$cf.temp);
                   domcontent = _obj.content(domtarget);
                   _obj.setAttribute(domtarget, '-', 'ifelse');
@@ -132,7 +133,7 @@ const parseTemplate = ($this) => {
       }
    }
 
-   let pcf = createNodeConf($this, $this);
+   let pcf = createNodeConf($this, $this, _pam.o_null);
    pcf.u = $this.$cf.name;
 
    let conf = createNodeConf($this.$sd, $this.$sd, pcf);
@@ -144,27 +145,27 @@ const parseTemplate = ($this) => {
       for (let i = _obj.length(list) - 1; i >= 0; i--) {
          let val = list[i].value;
          if (_obj.isStr(val)) {
-            let rs = _obj.func(_pam.gb_use_strict + val).call($this);
+            let rs = _obj.func(_pam.s_usestrict + val).call($this);
             if (_obj.isObj(rs)) {
                _obj.assign($this.$vd, rs);
             }
          } else if (_obj.isObj(val)) {
             if (val.h) {
-               _pam.gb_modules.set(val.h, val.o);
+               _pam.o_mods.set(val.h, val.o);
                if (val.s !== val.h) {
-                  _pam.gb_modules.set(val.s, val.h);
+                  _pam.o_mods.set(val.s, val.h);
                }
             } else if (val.o) {
-               if ($this.$cf[val.s] === _pam.gb_undf) {
+               if ($this.$cf[val.s] === _pam.o_undf) {
                   $this.$cf[val.s] = [];
                }
-               _obj.push($this.$cf[val.s], _obj.func(_pam.gb_use_strict + val.o));
+               _obj.push($this.$cf[val.s], _obj.func(_pam.s_usestrict + val.o));
             }
          }
       }
 
-      if ($this.$cf[_pam.gb_onload]) {
-         let arr = $this.$cf[_pam.gb_onload];
+      if ($this.$cf[_pam.s_onload]) {
+         let arr = $this.$cf[_pam.s_onload];
          for (let i = 0, l = _obj.length(arr); i < l; i++) {
             let rs = arr[i].call($this);
             if (_obj.isObj(rs)) {
@@ -172,12 +173,6 @@ const parseTemplate = ($this) => {
             }
          }
       }
-
-      // const uint16 = new Uint16Array([10, 20, 30, 40, 50]);
-      // let t = _obj.getType(uint16);
-      // let i = _obj.indexOf(t, 'Array');
-      // console.log(_obj.substring(t, i));
-      // return;
 
       callConfRecF($this, new Map([[$this.$sd, conf]]), ($this, cf) => {
          if (cf.s) {

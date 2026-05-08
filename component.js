@@ -1,7 +1,7 @@
 
 import {
-   gb_window as window,
-   gb_document as document,
+   o_window as window,
+   o_document as document,
 } from "./src/param.js";
 
 import * as _reg from './src/regex.js';
@@ -15,4 +15,4 @@ import parseTemplateComponent from './src/parseTemplateComponent.js';
 _obj.addEventListener(window, 'DOMContentLoaded', () => {
    fetchComponentGen(document);
    parseTemplateComponent(document);
-}, _pam.gb_event_once_conf);
+}, _pam.o_eventconf);

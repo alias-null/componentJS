@@ -19,7 +19,7 @@ const callConfRecF = ($this, objcf, callbak = () => { }) => {
                callbak($this, conf);
                $this.$fc = conf;
                conf.f($this, conf);
-               $this.$fc = _pam.gb_null;
+               $this.$fc = _pam.o_null;
                // console.log('call after>>', conf, 'r>>', conf.r);
 
                let arr = conf.d, il;
@@ -28,7 +28,7 @@ const callConfRecF = ($this, objcf, callbak = () => { }) => {
                      let dcf = arr[i];
                      $this.$fc = dcf;
                      dcf.f($this, dcf);
-                     $this.$fc = _pam.gb_null;
+                     $this.$fc = _pam.o_null;
                   }
                }
 

@@ -39,7 +39,7 @@ const parseNodeText = ($this, pcf, node, name) => {
          conf.e = insertNodeAuchToNode;
          val[len] = conf;
       } else {
-         val[len] = _pam.gb_null;
+         val[len] = _pam.o_null;
       }
    }
 
@@ -76,7 +76,7 @@ const parseNodeText = ($this, pcf, node, name) => {
          };
          val.splice(idx, 0, conf);
       } else {
-         val.splice(idx, 0, _pam.gb_null);
+         val.splice(idx, 0, _pam.o_null);
       }
    }
 

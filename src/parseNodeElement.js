@@ -62,7 +62,7 @@ const parseNodeElement = ($this, pcf, node, name) => {
 
          let { x, y } = ater[i];
 
-         let scf = createNodeConf(conf.m, _pam.gb_null, conf);
+         let scf = createNodeConf(conf.m, _pam.o_null, conf);
          scf.s = false;
          scf.b[0] = a[2];
          scf.b[1] = `${ag99}=${a[2]};if(${ag99}!==${ag01}.${y(a[1])}){${ag01}.${x(a[1], ag99)};}`;

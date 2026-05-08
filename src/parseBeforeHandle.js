@@ -44,12 +44,12 @@ const parseBeforeHandle = ($this, node, arrps, arrjsi, objtemp) => {
                , txt = _obj.trim(_obj.textContent(node));
             if (!!src) {
                let s = new URL(src, $this.$cf.base), h = _obj.href(s);
-               if (typ === 'module' && _pam.gb_modules.get(h) === _pam.gb_undf) {
+               if (typ === 'module' && _pam.o_mods.get(h) === _pam.o_undf) {
                   _obj.push(
                      arrps,
                      import(h).then(m => {
                         let res = { s: src, o: {}, h };
-                        if (m.default !== _pam.gb_undf) {
+                        if (m.default !== _pam.o_undf) {
                            res.o = m.default;
                            return res;
                         }
@@ -60,7 +60,7 @@ const parseBeforeHandle = ($this, node, arrps, arrjsi, objtemp) => {
                            }
                            return res;
                         }
-                        return _pam.gb_undf;
+                        return _pam.o_undf;
                      })
                   );
                   _obj.push(arrjsi, _obj.length(arrps) - 1);
@@ -68,30 +68,30 @@ const parseBeforeHandle = ($this, node, arrps, arrjsi, objtemp) => {
                   _obj.push(
                      arrps,
                      fetch(h)
-                        .then(r => r.status !== 200 ? _pam.gb_undf : r.text())
+                        .then(r => r.status !== 200 ? _pam.o_undf : r.text())
                   );
                   _obj.push(arrjsi, _obj.length(arrps) - 1);
                }
             } else if (!!txt && !typ) {
-               if (_obj.hasAttribute(node, _pam.gb_onload)) {
+               if (_obj.hasAttribute(node, _pam.s_onload)) {
                   _obj.push(
                      arrps,
-                     _obj.promiseResolve({ s: _pam.gb_onload, o: txt })
+                     _obj.promiseResolve({ s: _pam.s_onload, o: txt })
                   );
-               } else if (_obj.hasAttribute(node, _pam.gb_onunload)) {
+               } else if (_obj.hasAttribute(node, _pam.s_onunload)) {
                   _obj.push(
                      arrps,
-                     _obj.promiseResolve({ s: _pam.gb_onunload, o: txt })
+                     _obj.promiseResolve({ s: _pam.s_onunload, o: txt })
                   );
-               } else if (_obj.hasAttribute(node, _pam.gb_onadopt)) {
+               } else if (_obj.hasAttribute(node, _pam.s_onadopt)) {
                   _obj.push(
                      arrps,
-                     _obj.promiseResolve({ s: _pam.gb_onadopt, o: txt })
+                     _obj.promiseResolve({ s: _pam.s_onadopt, o: txt })
                   );
                } else {
                   _obj.push(
                      arrps,
-                     _obj.promiseResolve({ s: _pam.gb_onload, o: txt })
+                     _obj.promiseResolve({ s: _pam.s_onload, o: txt })
                   );
                }
                _obj.push(arrjsi, _obj.length(arrps) - 1);

@@ -4,6 +4,17 @@ export default defineConfig({
    build: {
       // 设置兼容目标
       target: 'es2018',
+      minify: 'terser',
+      terserOptions: {
+         module: false,
+         compress: {
+            passes: 3,
+            drop_console: true,
+         },
+         mangle: {
+            toplevel: true,
+         },
+      },
       // 启用库模式
       lib: {
          // 入口文件，指向你的源码主文件

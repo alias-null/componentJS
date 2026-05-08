@@ -34,14 +34,14 @@ const createProxy = ($this, data) => new Proxy(data, {
 
    , get(target, key, receiver) {
       if (key === Symbol.toStringTag) {
-         return `Proxy${_obj.getType(target)}`;
+         return `${_pam.s_Proxy}${_obj.getType(target)}`;
       }
 
       let val = target[key];
-      // console.log('getter',);
+      let valtyp = _obj.getType(val);
 
-      if (_obj.isFun(val)) {
-         if (_pam.gb_mutating_mth.has(key)) {
+      if (valtyp === _pam.s_Function) {
+         if (_pam.o_pxymth.has(key)) {
             return function () {
                // console.log(`function ${key} setter`,);
                let res = val.apply(target, arguments);
@@ -68,7 +68,8 @@ const createProxy = ($this, data) => new Proxy(data, {
 
 
          if (key === 'toString') {
-            if (_obj.isSet(target)) {
+            let tartyp = _obj.getType(target);
+            if (tartyp === _pam.s_Set) {
                return function () {
                   let k = -1;
                   let a = [];
@@ -78,7 +79,7 @@ const createProxy = ($this, data) => new Proxy(data, {
                   return a;
                };
             }
-            if (_obj.isMap(target)) {
+            if (tartyp === _pam.s_Map) {
                return function () {
                   let a = [];
                   for (let v of target) {
@@ -87,7 +88,8 @@ const createProxy = ($this, data) => new Proxy(data, {
                   return a;
                };
             }
-            if (_obj.isArr(target) || _obj.isObj(target)) {
+            if (tartyp === _pam.s_Array
+               || tartyp === _pam.s_Object) {
                return function () {
                   return JSON.stringify(target);
                };
@@ -112,11 +114,13 @@ const createProxy = ($this, data) => new Proxy(data, {
          }
       }
 
-
-      if (_obj.isArr(val)
-         || _obj.isObj(val)
-         || _obj.isSet(val)
-         || _obj.isMap(val)) {
+      if (
+         valtyp.slice(-5) === _pam.s_Array
+         || valtyp === _pam.s_Array
+         || valtyp === _pam.s_Object
+         || valtyp === _pam.s_Set
+         || valtyp === _pam.s_Map
+      ) {
          return createProxy($this, val);
       }
 
@@ -124,7 +128,23 @@ const createProxy = ($this, data) => new Proxy(data, {
    }
 
    , set(target, key, val, receiver) {
+      let valtyp = _obj.getType(val);
+      if (_obj.indexOf(valtyp, _pam.s_Proxy) === 0) {
+         if (val.$ === $this) {
+            val = val.val;
+         }
+      } else if (
+         valtyp.slice(-5) === _pam.s_Array
+         || valtyp === _pam.s_Array
+         || valtyp === _pam.s_Object
+         || valtyp === _pam.s_Set
+         || valtyp === _pam.s_Map
+      ) {
+         val = createProxy($this, val);
+      }
+
       // console.log('setter',);
+
       let res = Reflect.set(target, key, val, receiver);
 
       callConfProxy($this, $this.$fp.get(target));

@@ -10,6 +10,6 @@ import * as _pam from './param.js';
  * @returns 
  */
 const codeExpScope = (a, i) =>
-   `${_pam.gb_use_strict}let\x20{${_obj.join(a, ',')}}=${_obj.arg(i)}.a;`;
+   `${_pam.s_usestrict}let\x20{${_obj.join(a, ',')}}=${_obj.arg(i)}.a;`;
 
 export default codeExpScope;

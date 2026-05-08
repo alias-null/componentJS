@@ -10,14 +10,14 @@ class CusElement extends HTMLElement {
    $cf = {};
    $vd = {};
    $fp = new WeakMap();
-   $sd = _pam.gb_null;
-   $fc = _pam.gb_null;
+   $sd = _pam.o_null;
+   $fc = _pam.o_null;
    $fn = () => { };
 
    constructor() {
       super();
       this.attachShadow({ mode: 'open' });
-      let class_old = _pam.gb_customElements.get(
+      let class_old = _pam.o_customElements.get(
          _obj.toLowerCase(_obj.nodeName(this))
       );
       this.$cf = class_old.$cf;
@@ -51,9 +51,9 @@ class CusElement extends HTMLElement {
    }
 
    module = (s) => {
-      let m = _pam.gb_modules.get(s);
+      let m = _pam.o_mods.get(s);
       if (_obj.isStr(m)) {
-         m = _pam.gb_modules.get(m);
+         m = _pam.o_mods.get(m);
       }
       return m;
    };
@@ -65,12 +65,8 @@ class CusElement extends HTMLElement {
 
    // class方法依赖 this 必用箭头函数
    val = (param) => {
-      if (_obj.isPxy(param)) {
-         return param;
-      }
-      let top = { val: param };
-      top._ = top;
-      return createProxy(this, top);
+      return _obj.isPxy(param)
+         ? param : createProxy(this, { val: param, $: this });
    };
 }
 

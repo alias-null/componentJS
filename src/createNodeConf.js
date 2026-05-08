@@ -10,12 +10,12 @@ import * as _pam from './param.js';
  * @param {Object|Null} p 
  * @returns 
  */
-const createNodeConf = (m, n = _pam.gb_null, p = _pam.gb_null) => {
+const createNodeConf = (m, n, p) => {
    return {
       a: {}, // 作用域
       b: {}, // 备用参数
-      c: _pam.gb_null, // 子节点 配置列表
-      d: _pam.gb_null, // 属性节点 配置列表
+      c: _pam.o_null, // 子节点 配置列表
+      d: _pam.o_null, // 属性节点 配置列表
       e: () => { },
       f: () => { },
       m, // 操作锚点
@@ -24,7 +24,7 @@ const createNodeConf = (m, n = _pam.gb_null, p = _pam.gb_null) => {
       r: true, // f 的执行关联项
       s: true, // 是否设置作用域
       t: _obj.nodeType(m), // 存储锚点的类型
-      u: _pam.gb_null, // 存储一个名字 用于确定如何处理子节点
+      u: _pam.o_null, // 存储一个名字 用于确定如何处理子节点
    };
 };
 
