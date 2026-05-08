@@ -85,6 +85,8 @@ const parseNodeFor = ($this, pcf, node, name) => {
       if (!cf.b[4] || cf.b[4][0] !== typelen[0]) {
          cf.b[4] = typelen;
 
+         let type = cf.b[4][0];
+
          let code = _obj.slice(cf.b[2][0], 0);
          let assi = cf.b[2][2];
          let ag01 = _obj.arg(1);
@@ -92,9 +94,19 @@ const parseNodeFor = ($this, pcf, node, name) => {
          let ag97 = _obj.arg(97);
          let ag98 = _obj.arg(98);
          let ag99 = _obj.arg(99); // 减少 Proxy 变量的读取
-         switch (cf.b[4][0]) {
-            case _pam.s_Array:
+         switch (type) {
+
             case _pam.s_Number:
+               code[0] = `${code[0]}=${ag97}`;
+               if (code[1]) {
+                  code[1] = `${code[1]}=${ag97}`;
+               }
+               code =
+                  `${ag99}=${val};for(${ag97}=0;${ag97}<=${ag99};${ag97}++){let\x20${_obj.join(code, ',')};${assi}`;
+               break;
+
+
+            case _pam.s_Array:
             case _pam.s_String:
                code[0] = `${code[0]}=${ag99}[${ag97}]`;
                if (code[1]) {
@@ -135,6 +147,7 @@ const parseNodeFor = ($this, pcf, node, name) => {
                break;
          }
 
+         // console.log(`${sexp}${code}${ag01}(${ag97})}`);
          cf.b[9] =
             _obj.func(`${sexp}${code}${ag01}(${ag97})}`);
       } else {
