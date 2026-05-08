@@ -66,11 +66,11 @@ const parseNodeFor = ($this, pcf, node, name) => {
          _obj.remove(com0);
          _obj.remove(com1);
          // 父节点若存在 该节点 则删除
-         if (pcf.c.has(node)) {
+         if (pcf.c && pcf.c.has(node)) {
             _obj.del(pcf.c, node);
          }
          // 如果是 ifelse | switch 不存在 .c 而是 .b[10] 分支存储 分支编号为 r
-         else if (pcf.b[10][cf.r] && pcf.b[10][cf.r].has(node)) {
+         else if (_obj.isObj(pcf.b[10]) && pcf.b[10][cf.r] && pcf.b[10][cf.r].has(node)) {
             _obj.del(pcf.b[10][cf.r], node);
          }
          return;
@@ -136,14 +136,18 @@ const parseNodeFor = ($this, pcf, node, name) => {
          cf.b[4][1] = typelen[1];
       }
 
-      cf.b[9]
-         .call($this, cf, (k) => {
-            console.log(k);
-            // console.log(cf);
-            // console.log(node);
-            // parseChildNode($this, cf, _obj.cloneNode(node, true), false);
-         });
+      if (!cf.b[10]) {
+         cf.b[10] = {};
+         cf.b[9]
+            .call($this, cf, (k) => {
+               parseChildNode($this, cf, _obj.cloneNode(_obj.content(node), true));
+               cf.b[10][k] = cf.c;
+               cf.c = _obj.newMap();
+            });
+      }
 
+      console.log(cf.b[1].n);
+      console.log(cf.b[10]);
       return;
 
       // if (lencfc) {

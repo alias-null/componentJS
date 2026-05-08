@@ -97,9 +97,26 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
             cf.b[10][k] = cf.c;
             // 清空 ifelse 的 .c 避免被外部 call 因为条件分支不是全部一起执行
             cf.c = _obj.newMap();
+
+            // 先递归后代 修改 ifelse 后代节点的分支标记
+            let a = [cf.b[10][k]];
+            while (_obj.length(a)) {
+               let objcf = _obj.pop(a);
+               if (objcf && _obj.size(objcf)) {
+                  for (let scf of _obj.terValues(objcf)) {
+                     scf.r = k;
+                     if (scf.c && _obj.size(scf.c)) {
+                        _obj.push(a, scf.c);
+                     }
+                     if (scf.d) {
+                        let l = _obj.length(scf.d);
+                        while (l--) { scf.d[l].r = k; }
+                     }
+                  }
+               }
+            }
          } else {
             // 缓存节点 需要重新执行 e 因为非缓存节点在解析时执行
-
             let a = [cf.b[10][k]];
             while (_obj.length(a)) {
                let objcf = _obj.pop(a);
@@ -109,24 +126,6 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
                      if (scf.c && _obj.size(scf.c)) {
                         _obj.push(a, scf.c);
                      }
-                  }
-               }
-            }
-         }
-
-         // 先递归后代 修改 ifelse 后代节点的分支标记
-         let a = [cf.b[10][k]];
-         while (_obj.length(a)) {
-            let objcf = _obj.pop(a);
-            if (objcf && _obj.size(objcf)) {
-               for (let scf of _obj.terValues(objcf)) {
-                  scf.r = k;
-                  if (scf.c && _obj.size(scf.c)) {
-                     _obj.push(a, scf.c);
-                  }
-                  if (scf.d) {
-                     let l = _obj.length(scf.d);
-                     while (l--) { scf.d[l].r = k; }
                   }
                }
             }
