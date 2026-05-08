@@ -54,7 +54,7 @@ const parseNodeElement = ($this, pcf, node, name) => {
    }
 
    // 共用父节点作用域 所以使用 _obj.arg(1)
-   let ag1m = _obj.arg(1) + '.m';
+   let ag01 = _obj.arg(1) + '.m';
    let ag99 = _obj.arg(99);
    for (let i = 0, l = _obj.length(ater); i < l; i++) {
       for (let a of ater[i].w) {
@@ -65,8 +65,8 @@ const parseNodeElement = ($this, pcf, node, name) => {
          let scf = createNodeConf(conf.m, _pam.gb_null, conf);
          scf.s = false;
          scf.b[0] = a[2];
-         scf.b[1] = `${ag99}=${a[2]};if(${ag99}!==${ag1m}.${y(a[1])}){${ag1m}.${x(a[1], ag99)};}`;
-         // scf.b[1] = `${ag99}=${a[2]};${ag1m}.${x(a[1], ag99)};`;
+         scf.b[1] = `${ag99}=${a[2]};if(${ag99}!==${ag01}.${y(a[1])}){${ag01}.${x(a[1], ag99)};}`;
+         // scf.b[1] = `${ag99}=${a[2]};${ag01}.${x(a[1], ag99)};`;
          scf.f = ($this, cf) => {
             if (!cf.b[9]) {
                // 共用父节点作用域

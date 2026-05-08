@@ -57,18 +57,18 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
          let aks = _obj.keys(cf.a);
          let sexp = codeExpScope(aks, 0);
 
-         let ag0 = _obj.arg(0);
-         let ag1 = _obj.arg(1);
+         let ag00 = _obj.arg(0);
+         let ag01 = _obj.arg(1);
 
          let code = [];
          for (let i = 0, l = _obj.length(arrconf); i < l; i++) {
             let obj = arrconf[i];
             if (obj.c) {
                let loop = _obj.test(_reg.reg3, obj.c) ? codeAssignToPcf(aks, 0) : '';
-               let loopf = loop ? `||(function(){${loop}}).call(this,${ag0})` : '';
-               _obj.push(code, `${obj.g}(${obj.c}${loopf}){${loop}${ag1}(${i});${obj.b}}`);
+               let loopf = loop ? `||(function(){${loop}}).call(this,${ag00})` : '';
+               _obj.push(code, `${obj.g}(${obj.c}${loopf}){${loop}${ag01}(${i});${obj.b}}`);
             } else {
-               _obj.push(code, `${obj.g}{${ag1}(${i});${obj.b}}`);
+               _obj.push(code, `${obj.g}{${ag01}(${i});${obj.b}}`);
                arrconf.splice(i + 1);
                break;
             }
@@ -93,7 +93,7 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
             cf.r = k;
          }
 
-         // 解析子节点 生成配置
+         // 解析子节点 生成配置缓存
          if (!cf.b[10][k]) {
             parseChildNode($this, cf, arrconf[k].n);
             cf.b[10][k] = cf.c;
@@ -142,6 +142,7 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
          });
       });
 
+      // 所有分支都没有命中
       if (targetkey === _pam.gb_null) {
          removeComOldNodes(com0, com1);
          cf.r = _pam.gb_null;

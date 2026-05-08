@@ -44,8 +44,8 @@ const parseNodeText = ($this, pcf, node, name) => {
    }
 
    // 共用父节点作用域 所以使用 _obj.arg(1)
-   let op_arg = _obj.arg(1) + '.m.nodeValue';
-   let va_arg = _obj.arg(99);
+   let ag01 = _obj.arg(1) + '.m.nodeValue';
+   let ag99 = _obj.arg(99);
 
    len = _obj.length(arr);
    while (len--) {
@@ -56,7 +56,7 @@ const parseNodeText = ($this, pcf, node, name) => {
          conf.u = name;
          conf.s = false;
          conf.b[0] = arr[len];
-         conf.b[2] = `${va_arg}=\`${conf.b[0]}\`;if(${op_arg}!==${va_arg}){${op_arg}=${va_arg}`;
+         conf.b[2] = `${ag99}=\`${conf.b[0]}\`;if(${ag01}!==${ag99}){${ag01}=${ag99}`;
          conf.e = insertNodeAuchToNode;
          conf.f = ($this, cf) => {
             if (!cf.b[9]) {

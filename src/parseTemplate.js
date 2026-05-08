@@ -121,9 +121,14 @@ const parseTemplate = ($this) => {
    // for 
    for (let i = 0, il = _obj.length(arr_tempfor); i < il; i++) {
       let domtarget = arr_tempfor[i];
-      let str = _obj.getAttribute(domtarget, '.');
-      if (!str || !_obj.length(_obj.childNodes(_obj.content(domtarget)))) {
+      if (!_obj.length(_obj.childNodes(_obj.content(domtarget)))) {
          _obj.remove(domtarget);
+      } else {
+         let str = _obj.getAttribute(domtarget, '.');
+         if (!str
+            || _obj.length(_obj.filter(_obj.split(str, /\s+/g), v => v !== '')) < 2) {
+            _obj.remove(domtarget);
+         }
       }
    }
 
@@ -167,6 +172,12 @@ const parseTemplate = ($this) => {
             }
          }
       }
+
+      // const uint16 = new Uint16Array([10, 20, 30, 40, 50]);
+      // let t = _obj.getType(uint16);
+      // let i = _obj.indexOf(t, 'Array');
+      // console.log(_obj.substring(t, i));
+      // return;
 
       callConfRecF($this, new Map([[$this.$sd, conf]]), ($this, cf) => {
          if (cf.s) {

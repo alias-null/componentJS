@@ -25,6 +25,8 @@ export const indexOf = (a, b) => a.indexOf(b);
 export const lastIndexOf = (a, b) => a.lastIndexOf(b);
 export const assign = (a, b) => Object.assign(a, b);
 export const get = (a, b) => a.get(b);
+export const has = (a, b) => a.has(b);
+export const del = (a, b) => a.delete(b);
 export const set = (a, b, c) => a.set(b, c);
 export const apply = (a, b, c) => a.apply(b, c);
 export const slice = (a, b, c) => a.slice(b, c);
