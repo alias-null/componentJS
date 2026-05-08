@@ -15,7 +15,7 @@ const createProxy = ($this, data) => new Proxy(data, {
    // 拦截 deleteProperty（delete 操作）
    deleteProperty(target, key) {
       let res = Reflect.deleteProperty(target, key);
-      console.log('deleteProperty setter',);
+      // console.log('deleteProperty setter',);
 
       callConfProxy($this, $this.$fp.get(target));
 
@@ -33,6 +33,7 @@ const createProxy = ($this, data) => new Proxy(data, {
    // }
 
    , get(target, key, receiver) {
+      console.log('getter',);
       if (key === Symbol.toStringTag) {
          return `${_pam.s_Proxy}${_obj.getType(target)}`;
       }

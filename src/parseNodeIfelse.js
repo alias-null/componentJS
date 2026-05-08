@@ -79,10 +79,9 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
             _obj.func(`${sexp}${_obj.join(code, '')}`);
       }
 
-      let targetkey = _pam.o_null;
-      cf.b[9].call($this, cf, (k) => {
-         targetkey = k;
+      removeComOldNodes(com0, com1);
 
+      cf.b[9].call($this, cf, (k) => {
          // 设置 ifelse 节点的分支标记
          cf.r = k;
 
@@ -114,8 +113,6 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
                }
             }
          } else {
-            removeComOldNodes(com0, com1);
-
             // 缓存节点 需要重新执行 e 因为非缓存节点在解析时执行
             let a = [cf.b[10][k]];
             while (_obj.length(a)) {
@@ -138,12 +135,6 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
             }
          });
       });
-
-      // 所有分支都没有命中
-      if (targetkey === _pam.o_null) {
-         removeComOldNodes(com0, com1);
-         cf.r = _pam.o_null;
-      }
    };
    pcf.c.set(node, conf);
 };

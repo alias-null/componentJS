@@ -77,19 +77,11 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
             _obj.func(`${sexp}switch(${prop}){${_obj.join(code, '')}}`);
       }
 
-      let targetkey = _pam.o_null;
-      cf.b[9].call($this, cf, (k) => {
-         targetkey = k;
+      removeComOldNodes(com0, com1);
 
-         // 设置 switch 节点的分支标记
-         if (cf.r !== k) {
-            // 等于 true 说明是初始的状况
-            if (cf.r !== true) {
-               removeComOldNodes(com0, com1);
-            }
-            // 设置新的分支标记
-            cf.r = k;
-         }
+      cf.b[9].call($this, cf, (k) => {
+         // 设置 ifelse 节点的分支标记
+         cf.r = k;
 
          // 解析子节点 生成配置缓存
          if (!cf.b[10][k]) {
@@ -98,7 +90,7 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
             // 清空 ifelse 的 .c 避免被外部 call 因为条件分支不是全部一起执行
             cf.c = _obj.newMap();
 
-            // 先递归后代 修改 ifelse 后代节点的分支标记
+            // 设置所有后代分支 不关心顺序 设置就行
             let a = [cf.b[10][k]];
             while (_obj.length(a)) {
                let objcf = _obj.pop(a);
@@ -107,6 +99,8 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
                      scf.r = k;
                      if (_obj.size(scf.c)) {
                         _obj.push(a, scf.c);
+                     } else if (scf.b[10]) {
+                        a = a.concat(scf.b[10]);
                      }
                      if (scf.d) {
                         let l = _obj.length(scf.d);
@@ -138,12 +132,6 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
             }
          });
       });
-
-      // 所有分支都没有命中
-      if (targetkey === _pam.o_null) {
-         removeComOldNodes(com0, com1);
-         cf.r = _pam.o_null;
-      }
    };
    pcf.c.set(node, conf);
 };
