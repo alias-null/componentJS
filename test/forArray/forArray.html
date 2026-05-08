@@ -2,6 +2,7 @@
    const { val, called } = this;
    var param = val([[0, 1, 2], [3, 4, 5],]);
    // var param = val('a,b,c,d,e,f,g');
+   var param = val([0, 1, 2,]);
 
    // var param = val({ a: 1, b: 2, c: 3 });
    // var param = val(new Map([['a', 1], ['b', 2]]));
@@ -23,10 +24,16 @@
    };
 </script>
 
-<for .="vv1 kk1  param.val">
+<if .="param.val">
+   <if .="param.val">
+      <h4 .="id=vv1;style.border=`${vv1+1}px solid blue`">key => ${kk1} | val =>${vv1}</h4>
+   </if>
+</if>
+
+<!-- <for .="vv1 kk1  param.val">
    <h4 .="id=vv1;style.border=`${vv1+1}px solid blue`">key => ${kk1} | val =>${vv1}</h4>
-   <!-- <h4 .="id=vv1;style.border=`${vv1+1}px solid blue`">${vv1}</h4> -->
-   <!-- <for .="vv2 vv1">
+   <h4 .="id=vv1;style.border=`${vv1+1}px solid blue`">${vv1}</h4>
+   <for .="vv2 vv1">
       <h5 .="id=vv2;style.border=`${vv2+1}px solid red`">====== ${vv2}</h5>
-   </for> -->
-</for>
+   </for>
+</for> -->
