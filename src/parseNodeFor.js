@@ -69,7 +69,7 @@ const parseNodeFor = ($this, pcf, node, name) => {
          removeComOldNodes(com0, com1);
          return;
       }
-
+      console.log(typelen);
       // 缓存类型 只要数据的类型没有变化 就无需重新构造代码
       if (!cf.b[4] || cf.b[4][0] !== typelen[0]) {
          cf.b[4] = typelen;

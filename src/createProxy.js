@@ -33,7 +33,7 @@ const createProxy = ($this, data) => new Proxy(data, {
    // }
 
    , get(target, key, receiver) {
-      console.log('getter',);
+      // console.log('getter',);
       if (key === Symbol.toStringTag) {
          return `${_pam.s_Proxy}${_obj.getType(target)}`;
       }
