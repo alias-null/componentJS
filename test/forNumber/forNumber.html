@@ -1,13 +1,13 @@
 <script>
    const { val, called } = this;
-   var param = val([[0, 1, 2],]);
+   var param = val(1);
 
    setTimeout(() => {
-      param.val = [[6, 7, 8], [9, 10, 11],];
+      param.val = 3;
    }, 2000);
 
    setTimeout(() => {
-      param.val = [[6, 7,],];
+      param.val = 2;
    }, 4000);
 
    return {

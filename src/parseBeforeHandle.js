@@ -102,6 +102,7 @@ const parseBeforeHandle = ($this, node, arrps, arrjsi, objtemp) => {
             let tag = _obj.getAttribute(node, '-');
             if (tag === 'if' || tag === 'for' || tag === 'switch') {
                _obj.push(objtemp[tag], node);
+               node = _obj.content(node);
             }
             break;
 
@@ -117,7 +118,7 @@ const parseBeforeHandle = ($this, node, arrps, arrjsi, objtemp) => {
             }
             break;
       }
-      parseBeforeHandle($this, node, arrps, arrjsi);
+      parseBeforeHandle($this, node, arrps, arrjsi, objtemp);
    }
 };
 

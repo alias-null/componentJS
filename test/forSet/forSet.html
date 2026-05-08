@@ -6,17 +6,26 @@
       param.val.add('d');
       param.val.add('e');
       param.val.add('f');
-   }, 1000);
+      param.val.add('g');
+      param.val.add('h');
+   }, 2000);
 
    setTimeout(() => {
-      param.val = new Set(['g', 'h', 'i',]);
-   }, 2000);
+      param.val = new Set(['g',]);
+   }, 4000);
 
    return {
       param,
    };
 </script>
 
-<for .="vv1 kk1 param.val">
-   <h4 .="id=vv1;">${kk1} => ${vv1}</h4>
-</for>
+<div>
+   <for .="vv1 kk1  param.val">
+      <h4 .="id=vv1;style.border=`${vv1+1}px solid blue`">key => ${kk1} | val =>${vv1}</h4>
+      <div>
+         <for .="vv1 kk1  param.val">
+            <h6 .="id=vv1;style.border=`${vv1+1}px solid blue`">======== key => ${kk1} | val =>${vv1}</h6>
+         </for>
+      </div>
+   </for>
+</div>

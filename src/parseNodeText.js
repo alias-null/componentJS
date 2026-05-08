@@ -17,8 +17,6 @@ import insertNodeAuchToNode from './insertNodeAuchToNode.js';
  * @returns 
  */
 const parseNodeText = ($this, pcf, node, name) => {
-   _obj.remove(node);
-
    let val = _obj.trim(node.nodeValue);
    let arr = [];
    let len;

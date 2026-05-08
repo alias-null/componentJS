@@ -10,21 +10,28 @@
       param.val.set('d', 4);
       param.val.set('e', 5);
       param.val.set('f', 6);
-   }, 1000);
+      param.val.set('g', 6);
+      param.val.set('h', 6);
+   }, 2000);
 
    setTimeout(() => {
       param.val = new Map([
          ['g', 7],
-         ['h', 8],
-         ['i', 9],
       ]);
-   }, 2000);
+   }, 4000);
 
    return {
       param,
    };
 </script>
 
-<for .="vv1 kk1 param.val">
-   <h4 .="id=vv1;">${kk1} => ${vv1}</h4>
-</for>
+<div>
+   <for .="vv1 kk1  param.val">
+      <h4 .="id=vv1;style.border=`${vv1+1}px solid blue`">key => ${kk1} | val =>${vv1}</h4>
+      <div>
+         <for .="vv1 kk1  param.val">
+            <h6 .="id=vv1;style.border=`${vv1+1}px solid blue`">======== key => ${kk1} | val =>${vv1}</h6>
+         </for>
+      </div>
+   </for>
+</div>

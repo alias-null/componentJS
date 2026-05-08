@@ -17,6 +17,7 @@ import parseNodeFor from './parseNodeFor.js';
  * @returns 
  */
 const parseNodeAll = ($this, pcf, node) => {
+   _obj.remove(node);
    let name = _obj.nodeName(node);
    let type = _obj.nodeType(node);
    if (type === 1) {

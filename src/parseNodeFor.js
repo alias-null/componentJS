@@ -64,19 +64,9 @@ const parseNodeFor = ($this, pcf, node, name) => {
       );
       let b10len = _obj.length(cf.b[10]);
 
-      // 无法识别类型 或者 遍历长度小于 0 视为无效遍历 删除这个节点即可
+      // 无法识别类型 或者 遍历长度小于 0
       if (!typelen || typelen[1] < 0) {
-         _obj.remove(node);
-         _obj.remove(com0);
-         _obj.remove(com1);
-         // 父节点若存在 该节点 则删除
-         if (pcf.c.has(node)) {
-            _obj.del(pcf.c, node);
-         }
-         // 如果是 ifelse | switch 不存在 .c 而是 .b[10] 分支存储 分支编号为 r
-         else if (pcf.b[10] && pcf.b[10][cf.r] && pcf.b[10][cf.r].has(node)) {
-            _obj.del(pcf.b[10][cf.r], node);
-         }
+         removeComOldNodes(com0, com1);
          return;
       }
 
@@ -101,7 +91,7 @@ const parseNodeFor = ($this, pcf, node, name) => {
                   code[1] = `${code[1]}=${ag97}`;
                }
                code =
-                  `${ag99}=${val};for(${ag97}=0;${ag97}<=${ag99};${ag97}++){let\x20${_obj.join(code, ',')};${assi}`;
+                  `${ag99}=${val};for(${ag97}=0;${ag97}<${ag99};${ag97}++){let\x20${_obj.join(code, ',')};${assi}`;
                break;
 
 
@@ -153,6 +143,7 @@ const parseNodeFor = ($this, pcf, node, name) => {
          cf.b[4][1] = typelen[1];
       }
 
+
       if (!b10len) {
          cf.b[9].call($this, cf, (k) => {
             // 解析子节点 生成配置缓存
@@ -187,6 +178,7 @@ const parseNodeFor = ($this, pcf, node, name) => {
          //    });
          // }
       } else {
+         // 增多
          if (cf.b[4][1] > b10len) {
             let j = cf.b[4][1];
             for (let k = b10len; k < j; k++) {
@@ -204,7 +196,9 @@ const parseNodeFor = ($this, pcf, node, name) => {
                cf.b[10][k] = cf.c;
                cf.c = _obj.newMap();
             }
-         } else if (cf.b[4][1] < b10len) {
+         }
+         // 减少
+         else if (cf.b[4][1] < b10len) {
             for (let i = cf.b[4][1]; i < b10len; i++) {
                for (let scf of _obj.terValues(cf.b[10][i])) {
                   if (scf.t === 8) {

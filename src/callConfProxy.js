@@ -11,15 +11,16 @@ import * as _pam from './param.js';
 const callConfProxy = ($this, objcf, callbak = () => { }) => {
    if (objcf && _obj.size(objcf)) {
       for (let conf of _obj.terValues(objcf)) {
-         // console.log('PxyCall before>>', conf, 'r>>', conf.r);
-
-         if (conf.p.r === true || conf.r === conf.p.r) {
-            callbak($this, conf);
-            $this.$fc = conf;
-            conf.f($this, conf);
-            $this.$fc = _pam.o_null;
-            // console.log('PxyCall after>>', conf, 'r>>', conf.r);
-         }
+         callbak($this, conf);
+         $this.$fc = conf;
+         conf.f($this, conf);
+         $this.$fc = _pam.o_null;
+         // if (conf.p.r === true || conf.r === conf.p.r) {
+         //    callbak($this, conf);
+         //    $this.$fc = conf;
+         //    conf.f($this, conf);
+         //    $this.$fc = _pam.o_null;
+         // }
       }
    }
 };

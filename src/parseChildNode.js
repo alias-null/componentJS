@@ -32,9 +32,6 @@ const parseChildNode = ($this, conf, node, callbak = () => { }) => {
          // scf.c = _obj.newMap();
          parseChildNode($this, scf, scf.n, callbak);
       }
-      // console.log(conf.b[10]);
-   } else if (conf.b[10]) {
-      console.log(conf.b[10]);
    }
 };
 

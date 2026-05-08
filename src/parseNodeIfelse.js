@@ -84,19 +84,13 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
          targetkey = k;
 
          // 设置 ifelse 节点的分支标记
-         if (cf.r !== k) {
-            // 等于 true 说明是初始的状况
-            if (cf.r !== true) {
-               removeComOldNodes(com0, com1);
-            }
-            // 设置新的分支标记
-            cf.r = k;
-         }
+         cf.r = k;
 
          // 解析子节点 生成配置缓存
          if (!cf.b[10][k]) {
             parseChildNode($this, cf, arrconf[k].n);
             cf.b[10][k] = cf.c;
+
             // 清空 ifelse 的 .c 避免被外部 call 因为条件分支不是全部一起执行
             cf.c = _obj.newMap();
 
@@ -110,9 +104,7 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
                      if (_obj.size(scf.c)) {
                         _obj.push(a, scf.c);
                      } else if (scf.b[10]) {
-                        console.log(scf.b[10]);
-                        // a = a.concat(scf.b[10]);
-                        // console.log(a.concat(scf.b[10]));
+                        a = a.concat(scf.b[10]);
                      }
                      if (scf.d) {
                         let l = _obj.length(scf.d);
@@ -122,6 +114,8 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
                }
             }
          } else {
+            removeComOldNodes(com0, com1);
+
             // 缓存节点 需要重新执行 e 因为非缓存节点在解析时执行
             let a = [cf.b[10][k]];
             while (_obj.length(a)) {
