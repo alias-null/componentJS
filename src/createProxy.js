@@ -14,8 +14,8 @@ import callConfProxy from './callConfProxy.js';
 const createProxy = ($this, data) => new Proxy(data, {
    // 拦截 deleteProperty（delete 操作）
    deleteProperty(target, key) {
-      let res = Reflect.deleteProperty(target, key);
       // console.log('deleteProperty setter',);
+      let res = Reflect.deleteProperty(target, key);
 
       callConfProxy($this, $this.$fp.get(target));
 
@@ -24,8 +24,8 @@ const createProxy = ($this, data) => new Proxy(data, {
 
    // // 拦截 defineProperty（Object.defineProperty）
    // , defineProperty(target, key, descriptor) {
+   //    // console.log('defineProperty setter',);
    //    let res = Reflect.defineProperty(target, key, descriptor);
-   //    console.log('defineProperty setter',);
 
    //    callConfProxy($this, $this.$fp.get(target));
 
@@ -34,6 +34,7 @@ const createProxy = ($this, data) => new Proxy(data, {
 
    , get(target, key, receiver) {
       // console.log('getter',);
+
       if (key === Symbol.toStringTag) {
          return `${_pam.s_Proxy}${_obj.getType(target)}`;
       }
@@ -52,19 +53,6 @@ const createProxy = ($this, data) => new Proxy(data, {
                return res;
             };
          }
-
-
-         // 模板函数执行 触发数据读取 自动收集依赖函数 存储为顺序集合列表
-         // 取出执行时不能递归 因为读取时已经递归执行
-         if ($this.$fc) {
-            let objconf = $this.$fp.get(target);
-            if (objconf) {
-               objconf.add($this.$fc);
-            } else {
-               $this.$fp.set(target, new Set([$this.$fc]));
-            }
-         }
-
 
          if (key === 'toString') {
             let tartyp = _obj.getType(target);
@@ -95,6 +83,19 @@ const createProxy = ($this, data) => new Proxy(data, {
             }
          }
 
+
+         // 模板函数执行 触发数据读取 自动收集依赖函数 存储为顺序集合列表
+         // 取出执行时不能递归 因为读取时已经递归执行
+         if ($this.$fc) {
+            let objconf = $this.$fp.get(target);
+            if (objconf) {
+               objconf.add($this.$fc);
+            } else {
+               $this.$fp.set(target, new Set([$this.$fc]));
+            }
+         }
+
+
          return function () {
             return val.apply(target, arguments);
          };
@@ -110,7 +111,7 @@ const createProxy = ($this, data) => new Proxy(data, {
             $this.$fp.set(target, new Set([$this.$fc]));
          }
       }
-      // console.log($this.$fp);
+
       if (
          _pam.o_pxytype[valtyp]
          || valtyp.slice(-5) === _pam.s_Array
@@ -122,6 +123,8 @@ const createProxy = ($this, data) => new Proxy(data, {
    }
 
    , set(target, key, val, receiver) {
+      // console.log('setter',);
+
       let valtyp = _obj.getType(val);
       if (_obj.indexOf(valtyp, _pam.s_Proxy) === 0) {
          if (val.$ === $this) {
@@ -133,8 +136,6 @@ const createProxy = ($this, data) => new Proxy(data, {
       ) {
          val = createProxy($this, val);
       }
-
-      // console.log('setter',);
 
       let res = Reflect.set(target, key, val, receiver);
 
