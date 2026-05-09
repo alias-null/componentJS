@@ -18,30 +18,32 @@
 <h5>if else 之间为无效 将被删除</h5>
 param => [${param.val}] <br>
 
-<if .="param.val==0">
-   <div .="innerText=`if-${param.val}`;style.border=`${param.val+3}px solid blue`"></div>
-</if>
-123123
-123123
-<h1>123123</h1>
-<else .="param.val==1">
-   <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid green`"></div>
-</else>
-123123
-123123
-<h1>123123</h1>
-<else .="param.val==2">
-   <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid yellow`"></div>
-</else>
-123123
-123123
-<h1>123123</h1>
-<else .="param.val==3">
-   <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid orchid`"></div>
-</else>
-123123
-123123
-<h1>123123</h1>
-<else>
-   <div .="innerText=`else-${param.val}`;style.border=`${param.val+3}px solid red`"></div>
-</else>
+<div>
+   <if .="param.val==0">
+      <div .="innerText=`if-${param.val}`;style.border=`${param.val+3}px solid blue`"></div>
+   </if>
+   123123
+   123123
+   <h1>123123</h1>
+   <else .="param.val==1">
+      <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid green`"></div>
+   </else>
+   123123
+   123123
+   <h1>123123</h1>
+   <else .="param.val==2">
+      <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid yellow`"></div>
+   </else>
+   123123
+   123123
+   <h1>123123</h1>
+   <else .="param.val==3">
+      <div .="innerText=`elseif-${param.val}`;style.border=`${param.val+3}px solid orchid`"></div>
+   </else>
+   123123
+   123123
+   <h1>123123</h1>
+   <else>
+      <div .="innerText=`else-${param.val}`;style.border=`${param.val+3}px solid red`"></div>
+   </else>
+</div>

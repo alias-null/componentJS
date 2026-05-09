@@ -14,23 +14,25 @@
    };
 </script>
 
-<switch .="param.val" break>
-   <case .="0">
-      <h1 .="id=param.val;style.border=`${param.val+2}px solid blue`">${param.val}</h1>
-   </case>
-   <case .="1">
-      <h2 .="id=param.val;style.border=`${param.val+2}px solid green`">${param.val}</h2>
-   </case>
-   <case .="2">
-      <h3 .="id=param.val;style.border=`${param.val+2}px solid yellow`">${param.val}</h3>
-   </case>
-   <case .="3">
-      <h4 .="id=param.val;style.border=`${param.val+2}px solid red`">${param.val}</h4>
-   </case>
-   <case .="4">
-      <h5 .="id=param.val;style.border=`${param.val+2}px solid orchid`">${param.val}</h5>
-   </case>
-   <default>
-      <h6 .="id=param.val;style.border=`${param.val+2}px solid rgb(0, 255, 251)`">${param.val}</h6>
-   </default>
-</switch>
+<div>
+   <switch .="param.val" break>
+      <case .="0">
+         <h1 .="id=param.val;style.border=`${param.val+2}px solid blue`">${param.val}</h1>
+      </case>
+      <case .="1">
+         <h2 .="id=param.val;style.border=`${param.val+2}px solid green`">${param.val}</h2>
+      </case>
+      <case .="2">
+         <h3 .="id=param.val;style.border=`${param.val+2}px solid yellow`">${param.val}</h3>
+      </case>
+      <case .="3">
+         <h4 .="id=param.val;style.border=`${param.val+2}px solid red`">${param.val}</h4>
+      </case>
+      <case .="4">
+         <h5 .="id=param.val;style.border=`${param.val+2}px solid orchid`">${param.val}</h5>
+      </case>
+      <default>
+         <h6 .="id=param.val;style.border=`${param.val+2}px solid rgb(0, 255, 251)`">${param.val}</h6>
+      </default>
+   </switch>
+</div>
