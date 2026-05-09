@@ -1,73 +1,13 @@
 <script>
    const { val, called } = this;
-   var param = val(null);
+   var param = val(3);
 
    setTimeout(() => {
-      param.val = 1;
+      param.val = null;
       setTimeout(() => {
-         param.val = true;
-         setTimeout(() => {
-            param.val = 2;
-            setTimeout(() => {
-               param.val = false;
-               setTimeout(() => {
-                  param.val = 3;
-                  setTimeout(() => {
-                     param.val = undefined;
-                     setTimeout(() => {
-                        param.val = 4;
-                        setTimeout(() => {
-                           param.val = null;
-                           setTimeout(() => {
-                              param.val = 5;
-                              setTimeout(() => {
-                                 param.val = NaN;
-                                 setTimeout(() => {
-                                    param.val = 'abc';
-                                 }, 500);
-                              }, 500);
-                           }, 500);
-                        }, 500);
-                     }, 500);
-                  }, 500);
-               }, 500);
-            }, 500);
-         }, 500);
+         param.val = 'abc';
       }, 500);
    }, 500);
-
-   var item = -1;
-   var array = [
-      // 1,
-      // true,
-      // 2,
-      // false,
-      // 3,
-      // undefined,
-      // 4,
-      // null,
-      // 5,
-      'abc',
-      ['o', 'p', 'q'],
-      { r: 1, s: 2, t: 3 },
-      new Set(['Set=>4', 'Set=>5', 'Set=>6']),
-      new Map([
-         ['Map-1', 'Map=>7'],
-         ['Map-2', 'Map=>8'],
-         ['Map-3', 'Map=>9']
-      ]),
-      new Uint16Array([10, 20, 30, 40, 50])
-   ];
-
-   // setInterval(() => {
-   //    item++;
-
-   //    param.val = array[item];
-
-   //    if (item > array.length - 1) {
-   //       item = -1;
-   //    }
-   // }, 500);
 
    return {
       param,
