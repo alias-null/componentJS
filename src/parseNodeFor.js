@@ -150,14 +150,14 @@ const parseNodeFor = ($this, pcf, node, name) => {
          cf.b[9].call($this, cf, (k) => {
             // 解析子节点 生成配置缓存
             parseChildNode(
-               $this,
-               cf,
-               _obj.cloneNode(_obj.content(node), true),
-               ($this, scf) => {
-                  if (scf.s) {
-                     assignScope($this, scf);
-                  }
-               }
+               $this
+               , cf
+               , _obj.cloneNode(_obj.content(node), true)
+               // , ($this, scf) => {
+               //    if (scf.s) {
+               //       assignScope($this, scf);
+               //    }
+               // }
             );
 
             cf.b[10][k] = cf.c;
@@ -165,9 +165,9 @@ const parseNodeFor = ($this, pcf, node, name) => {
 
             // 执行分支后代节点
             callConfRecF($this, cf.b[10][k], ($this, cf) => {
-               // if (cf.s) {
-               //    assignScope($this, cf);
-               // }
+               if (cf.s) {
+                  assignScope($this, cf);
+               }
             });
          });
 
@@ -185,10 +185,10 @@ const parseNodeFor = ($this, pcf, node, name) => {
             let j = cf.b[4][1];
             for (let k = b10len; k < j; k++) {
                parseChildNode(
-                  $this,
-                  cf,
-                  _obj.cloneNode(_obj.content(node), true),
-                  // ($this, scf) => {
+                  $this
+                  , cf
+                  , _obj.cloneNode(_obj.content(node), true)
+                  // , ($this, scf) => {
                   //    if (scf.s) {
                   //       assignScope($this, scf);
                   //    }
@@ -218,10 +218,10 @@ const parseNodeFor = ($this, pcf, node, name) => {
          cf.b[9].call($this, cf, (k) => {
             // // 解析子节点 生成配置缓存
             // parseChildNode(
-            //    $this,
-            //    cf,
-            //    _obj.cloneNode(_obj.content(node), true),
-            //    ($this, scf) => {
+            //    $this
+            //    , cf
+            //    , _obj.cloneNode(_obj.content(node), true)
+            //    , ($this, scf) => {
             //       if (scf.s) {
             //          assignScope($this, scf);
             //       }

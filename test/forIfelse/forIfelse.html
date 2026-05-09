@@ -1,0 +1,21 @@
+<script>
+   const { val, called } = this;
+   var param = val([1, 2,]);
+
+   // setInterval(() => {
+   // }, 500);
+
+   return {
+      param,
+   };
+</script>
+
+<div>
+   <for .="vv1 kk1  param.val">
+      <h4 style="border:1px solid blue">for == ${vv1}</h4>
+      <if .="vv1++">
+         <h6 style="border: 1px solid red;">if == ${vv1}</h6>
+      </if>
+      <h3 style="border: 1px solid green;">${vv1}</h3>
+   </for>
+</div>

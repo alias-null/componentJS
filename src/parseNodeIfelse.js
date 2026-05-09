@@ -67,7 +67,7 @@ const parseNodeIfelse = ($this, pcf, node, name) => {
             let obj = arrconf[i];
             if (obj.c) {
                let loop = _obj.test(_reg.reg3, obj.c) ? codeAssignToPcf(aks, 0) : '';
-               let loopf = loop ? `||(function(){${loop}}).call(this,${ag00})` : '';
+               let loopf = loop ? `||(function(){${loop}})(${ag00})` : '';
                _obj.push(code, `${obj.g}(${obj.c}${loopf}){${loop}${ag01}(${i});${obj.b}}`);
             } else {
                _obj.push(code, `${obj.g}{${ag01}(${i});${obj.b}}`);
