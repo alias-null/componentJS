@@ -77,7 +77,12 @@ class CusElement extends HTMLElement {
     * @param {Array} a 
     */
    binded = (a) => {
-      console.log(a);
+      if (!_obj.isArr(a[0])) {
+         a = [a];
+      }
+      // for (let i = 0, l = _obj.length(a); i < l; i++) {
+      //    console.log(a[i]);
+      // }
    };
 
    /**

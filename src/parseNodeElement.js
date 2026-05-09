@@ -60,7 +60,6 @@ const parseNodeElement = ($this, pcf, node, name) => {
       for (let a of ater[i].w) {
          if (a[1] === 'class') { a[1] += 'Name'; }
          a[2] = _obj.trim(a[2]);
-         console.log(a);
          let { x, y } = ater[i];
 
          let scf = createNodeConf(conf.m, _pam.o_null, conf);
