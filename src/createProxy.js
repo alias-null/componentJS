@@ -4,6 +4,7 @@ import * as _obj from "./object.js";
 import * as _pam from './param.js';
 
 import callConfProxy from './callConfProxy.js';
+import saveProxyConf from './saveProxyConf.js';
 
 /**
  * 
@@ -85,15 +86,7 @@ const createProxy = ($this, data) => new Proxy(data, {
 
 
          // 模板函数执行 触发数据读取 自动收集依赖函数 存储为顺序集合列表
-         // 取出执行时不能递归 因为读取时已经递归执行
-         if ($this.$fc) {
-            let objconf = $this.$fp.get(target);
-            if (objconf) {
-               objconf.add($this.$fc);
-            } else {
-               $this.$fp.set(target, new Set([$this.$fc]));
-            }
-         }
+         saveProxyConf($this, target);
 
 
          return function () {
@@ -102,15 +95,7 @@ const createProxy = ($this, data) => new Proxy(data, {
       }
 
       // 模板函数执行 触发数据读取 自动收集依赖函数 存储为顺序集合列表
-      // 取出执行时不能递归 因为读取时已经递归执行
-      if ($this.$fc) {
-         let objconf = $this.$fp.get(target);
-         if (objconf) {
-            objconf.add($this.$fc);
-         } else {
-            $this.$fp.set(target, new Set([$this.$fc]));
-         }
-      }
+      saveProxyConf($this, target);
 
       if (
          _pam.o_pxytype[valtyp]

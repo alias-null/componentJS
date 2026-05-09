@@ -3,7 +3,7 @@ import * as _reg from './regex.js';
 import * as _obj from "./object.js";
 import * as _pam from './param.js';
 
-import defineElementClass from './defineElementClass.js';
+import defineClass from './defineClass.js';
 
 /**
  * 
@@ -59,7 +59,7 @@ const fetchComponentGen = (doc) => {
                      return s;
                   });
 
-               defineElementClass(
+               defineClass(
                   new URL(res.url),
                   name,
                   domtemp,

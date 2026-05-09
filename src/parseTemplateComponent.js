@@ -3,7 +3,7 @@ import * as _reg from './regex.js';
 import * as _obj from "./object.js";
 import * as _pam from './param.js';
 
-import defineElementClass from './defineElementClass.js';
+import defineClass from './defineClass.js';
 
 /**
  * 
@@ -17,7 +17,7 @@ const parseTemplateComponent = (doc) => {
       const name = _obj.getAttribute(domtemp, attr);
       domtemp.replaceWith(_obj.createElement(name));
 
-      defineElementClass(
+      defineClass(
          location,
          name,
          domtemp,

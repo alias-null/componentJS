@@ -19,7 +19,7 @@ import forGetTypeLen from "./forGetTypeLen.js";
  * 
  * @param {HTMLElement} $this
  */
-const parseTemplate = ($this) => {
+const parseTemplateFile = ($this) => {
    const domfratop = _obj.cloneNode(_obj.content($this.$cf.temp), true)
       , arr_ps_all = []
       , arr_ps_jsi = []
@@ -215,4 +215,4 @@ const parseTemplate = ($this) => {
    });
 };
 
-export default parseTemplate;
+export default parseTemplateFile;

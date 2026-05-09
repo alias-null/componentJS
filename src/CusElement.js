@@ -3,7 +3,7 @@ import * as _reg from './regex.js';
 import * as _obj from "./object.js";
 import * as _pam from './param.js';
 
-import parseTemplate from './parseTemplate.js';
+import parseTemplateFile from './parseTemplateFile.js';
 import createProxy from './createProxy.js';
 
 class CusElement extends HTMLElement {
@@ -26,7 +26,7 @@ class CusElement extends HTMLElement {
       if (h) {
          _obj.setAttribute(this, this.$cf.attr, h);
       }
-      parseTemplate(this);
+      parseTemplateFile(this);
    }
 
    adoptedCallback() {

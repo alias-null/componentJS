@@ -12,7 +12,7 @@ import CusElement from './CusElement.js';
  * @param {HTMLTemplateElement} domtemp 模板 html 
  * @param {Boolean} sethref 是否设置 href 到配置中
  */
-const defineElementClass = (objurl, tagname, domtemp, sethref = true) => {
+const defineClass = (objurl, tagname, domtemp, sethref = true) => {
    const Component = class extends CusElement { }
       , orig = objurl.origin
       , file = _obj.replace(objurl.pathname, /[\/]+/g, '/');
@@ -26,4 +26,4 @@ const defineElementClass = (objurl, tagname, domtemp, sethref = true) => {
    _pam.o_customElements.define(tagname, Component);
 };
 
-export default defineElementClass;
+export default defineClass;
