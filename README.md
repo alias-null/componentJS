@@ -83,8 +83,8 @@ ${msg.val}
 用于文本节点中，直接显示数据。
 
 ```
-<script>const {val}=this; const s=val('World'); return{s}</script>
-<h1>Hello ${s.val}</h1>
+<script>const {val}=this; const str=val('World'); return{str}</script>
+<h1>Hello ${str.val}</h1>
 ```
 
 **DOM 绑定 **`#`:
@@ -109,7 +109,7 @@ ${msg.val}
 等同于调用 `dom.setAttribute(key, value)`。
 
 ```
-<div ..="data-test=s.val"></div>
+<div ..="data-test=str.val"></div>
 ```
 
 ### 流程控制
@@ -119,9 +119,12 @@ ${msg.val}
 **条件渲染 (**`<if>`**, **`<else>`**, **`<else-if>`**)**
 
 ```
-<if .if="s.val === 'World'">
+<if .="str.val === 'World'">
   <h1>Hello World</h1>
 </if>
+<else .="str.val === 'sir'">
+  <h1>Hello Stranger</h1>
+</else>
 <else>
   <h1>Hello Stranger</h1>
 </else>
@@ -130,7 +133,7 @@ ${msg.val}
 **列表渲染 (**`<for>`**)**
 
 ```
-<for .for="item in list">
+<for .="item in list">
   <li>${item.name}</li>
 </for>
 ```
@@ -138,9 +141,9 @@ ${msg.val}
 **条件判断 (**`<switch>`**, **`<case>`**, **`<default>`**)**
 
 ```
-<switch .switch="status">
-  <case .case="'success'">Success!</case>
-  <case .case="'error'">Error!</case>
+<switch .="status" break>
+  <case .="'success'">Success!</case>
+  <case .="'error'">Error!</case>
   <default>Unknown Status</default>
 </switch>
 ```
