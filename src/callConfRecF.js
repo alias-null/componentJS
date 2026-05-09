@@ -25,7 +25,7 @@ const callConfRecF = ($this, objcf, callbak = () => { }) => {
                   for (let i = 0; i < il; i++) {
                      let dcf = arr[i];
                      if (conf.r === true || dcf.r === conf.r) {
-                        callbak($this, conf);
+                        callbak($this, dcf);
                         $this.$fc = dcf;
                         dcf.f($this, dcf);
                         $this.$fc = _pam.o_null;
