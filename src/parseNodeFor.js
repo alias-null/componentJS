@@ -67,9 +67,11 @@ const parseNodeFor = ($this, pcf, node, name) => {
       // 无法识别类型 或者 遍历长度小于 0
       if (!typelen || typelen[1] < 0) {
          removeComOldNodes(com0, com1);
+         // 清空子节点配置数组，以便下次数据恢复时可以重新创建子节点
+         cf.b[10] = [];
          return;
       }
-      console.log(typelen);
+
       // 缓存类型 只要数据的类型没有变化 就无需重新构造代码
       if (!cf.b[4] || cf.b[4][0] !== typelen[0]) {
          cf.b[4] = typelen;
