@@ -9,6 +9,7 @@ import createProxy from './createProxy.js';
 class CusElement extends HTMLElement {
    $cf = {};
    $vd = {};
+   $fb = new WeakMap();
    $fp = new WeakMap();
    $sd = _pam.o_null;
    $fc = _pam.o_null;
@@ -81,7 +82,32 @@ class CusElement extends HTMLElement {
          a = [a];
       }
       // for (let i = 0, l = _obj.length(a); i < l; i++) {
-      //    console.log(a[i]);
+      //    let conf = a[i][1];
+      //    for (let k of _obj.keys(conf)) {
+      //       let v = conf[k];
+      //       if (k === 'style') {
+      //       } else if (k === 'class') {
+
+      //       } else if (k === 'attributes') {
+      //          for (let vk of _obj.keys(v)) {
+      //             // console.log(vk);
+      //             // console.log(v[vk]);
+      //          }
+      //          // console.log(`setAttribute()`);
+      //       } else if (_obj.isFun(v)) {
+
+      //       } else {
+      //          function test(pxy, prop, setval) {
+      //             let dom = pxy.val;
+      //             let oldval = dom[prop];
+      //             let newval = setval;
+      //             if (oldval !== newval) {
+      //                dom[prop] = newval;
+      //             }
+      //          }
+      //          console.log(`${_obj.arg(98)}=\`${v}\`;${_obj.arg(99)}=${_obj.arg(0)}.val.${k};if(${v}){}`);
+      //       }
+      //    }
       // }
    };
 
