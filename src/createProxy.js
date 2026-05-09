@@ -44,7 +44,7 @@ const createProxy = ($this, data) => new Proxy(data, {
       let valtyp = _obj.getType(val);
 
       if (valtyp === _pam.s_Function) {
-         if (_pam.o_pxymth[key]) {
+         if (_pam.o_pxymth.has(key)) {
             return function () {
                // console.log(`function ${key} setter`,);
                let res = val.apply(target, arguments);
@@ -98,7 +98,7 @@ const createProxy = ($this, data) => new Proxy(data, {
       saveProxyConf($this, target);
 
       if (
-         _pam.o_pxytype[valtyp]
+         _pam.o_pxytype.has(valtyp)
          || valtyp.slice(-5) === _pam.s_Array
       ) {
          return createProxy($this, val);
@@ -116,7 +116,7 @@ const createProxy = ($this, data) => new Proxy(data, {
             val = val.val;
          }
       } else if (
-         _pam.o_pxytype[valtyp]
+         _pam.o_pxytype.has(valtyp)
          || valtyp.slice(-5) === _pam.s_Array
       ) {
          val = createProxy($this, val);

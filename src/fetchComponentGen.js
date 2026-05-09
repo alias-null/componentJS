@@ -41,7 +41,7 @@ const fetchComponentGen = (doc) => {
                   _obj.replace(res.txt, _reg.reg10, (s, s1) => {
                      s = _obj.trim(s);
                      s1 = _obj.toLowerCase(s1);
-                     if (_pam.o_custempname[s1]) {
+                     if (_pam.o_custempname.has(s1)) {
                         if (_obj.indexOf(s, '</') === 0) {
                            return `</${_pam.s_template}>`;
                         }

@@ -1,0 +1,12 @@
+<script>
+   const { val } = this;
+
+   const param = val(null);
+
+   param.val = [1, 2, 3];
+
+   return { param }
+</script>
+
+hello ${param.val }
+hello \${param.val }
