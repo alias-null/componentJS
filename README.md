@@ -19,7 +19,7 @@
 由于库打包为 UMD 格式，你可以直接通过 `<script>` 标签引入：
 
 ```
-<script src="path/to/your-lib.js"></script>
+<script src="path/to/component.umd.min.js"></script>
 ```
 
 ### 模式一：远程加载单文件组件 (推荐)
@@ -43,12 +43,12 @@
 <!-- 1. 定义逻辑与数据 -->
 <script>
   const { val } = this; // this 指向 Web Component 实例
-  const s = val('World'); // 定义响应式数据
-  return { s }; // 暴露给模板使用
+  const str = val('World'); // 定义响应式数据
+  return { str }; // 暴露给模板使用
 </script>
 
 <!-- 2. 定义视图 -->
-<h1>Hello ${s.val}</h1>
+<h1>Hello ${str.val}</h1>
 
 <!-- 支持纯文本节点，无需根标签 -->
 <script>const {val}=this; const msg = val('这是纯文本'); return {msg}</script>
@@ -61,17 +61,15 @@ ${msg.val}
 
 ```
 <body>
+  <!-- 页面中直接编写组件 -->
   <template component="my-inline-comp">
     <script>
         const {val} = this;
-        const data = val('Inline Data');
-        return {data};
+        const str = val('world');
+        return {str};
     </script>
-    <div>${data.val}</div>
+    <div>hellow ${str.val}</div>
   </template>
-  
-  <!-- 激活组件 -->
-  <my-inline-comp></my-inline-comp>
 </body>
 ```
 
@@ -90,13 +88,12 @@ ${msg.val}
 ```
 
 **DOM 绑定 **`#`:
-用于直接将数据绑定到 DOM 元素（如 input 的 value 或元素文本内容）。注意：使用 `#` 绑定时，数据对象不需要加 `.val`。
+用于直接将数据绑定到 DOM 元素。注意：使用 `#` 绑定时，数据对象不需要加 `.val`。
 
 ```
-<script>const {val}=this; const s=val('Input Value'); return{s}</script>
-<input #="s" /> 
-<!-- 或者绑定到普通元素内容 -->
-<div #="s"></div>
+<script>const {val,called}=this; const dom=val(); called(()=>{console.log(dom.val);});return{dom}</script>
+<!-- 绑定元素 -->
+<div #="dom"></div>
 ```
 
 ### 属性操作
