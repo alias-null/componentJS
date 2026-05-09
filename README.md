@@ -51,7 +51,11 @@
 <h1>Hello ${str.val}</h1>
 
 <!-- 支持纯文本节点，无需根标签 -->
-<script>const {val}=this; const msg = val('这是纯文本'); return {msg}</script>
+<script>
+const {val}=this; 
+const msg = val('这是纯文本'); 
+return {msg}
+</script>
 ${msg.val}
 ```
 
@@ -83,7 +87,11 @@ ${msg.val}
 用于文本节点中，直接显示数据。
 
 ```
-<script>const {val}=this; const str=val('World'); return{str}</script>
+<script>
+const {val}=this; 
+const str=val('World'); 
+return{str}
+</script>
 <h1>Hello ${str.val}</h1>
 ```
 
@@ -91,7 +99,14 @@ ${msg.val}
 用于直接将数据绑定到 DOM 元素。注意：使用 `#` 绑定时，数据对象不需要加 `.val`。
 
 ```
-<script>const {val,called}=this; const dom=val(); called(()=>{console.log(dom.val);});return{dom}</script>
+<script>
+const {val,called}=this; 
+const dom=val(); 
+called(()=>{
+   console.log(dom.val);
+});
+return{dom}
+</script>
 <!-- 绑定元素 -->
 <div #="dom"></div>
 ```
