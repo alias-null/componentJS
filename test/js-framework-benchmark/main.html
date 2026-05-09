@@ -46,7 +46,7 @@
       <table class="table table-hover table-striped test-data">
          <tbody>
             <for .="row rows.val">
-               <tr .="class=row.id === selected.val ? 'danger' : ''" ..="data-label=row.label">
+               <tr .="className=row.id === selected.val ? 'danger' : ''" ..="data-label=row.label">
                   <td class="col-md-1">${row.id}</td>
                   <td class="col-md-4">
                      <a .="onclick=()=> select(row.id)">${row.label}</a>

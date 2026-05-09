@@ -29,21 +29,34 @@ export const o_obsconf = { childList: true, subtree: true };
 
 export const o_mods = new Map(); // 全局级别
 
-export const o_custempname = new Set([
-   'if', 'else', 'for',
-   'switch', 'case', 'default',
-]);
+export const o_custempname = {
+   'if': 1,
+   'else': 1,
+   'for': 1,
+   'switch': 1,
+   'case': 1,
+   'default': 1,
+};
 
-export const o_pxymth = new Set([
+export const o_pxymth = {
    // Array
-   'copyWithin', 'fill', 'pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift',
+   'copyWithin': 1,
+   'fill': 1,
+   'pop': 1,
+   'push': 1,
+   'reverse': 1,
+   'shift': 1,
+   'sort': 1,
+   'splice': 1,
+   'unshift': 1,
 
-   // Set
-   'add', 'clear', 'delete',
 
-   // Map
-   'clear', 'delete', 'set'
-]);
+   // Set | Map
+   'add': 1,
+   'set': 1,
+   'clear': 1,
+   'delete': 1,
+};
 
 export const s_Map = $s_Map();
 export const s_Set = $s_Set();
@@ -62,3 +75,10 @@ export const s_template = $s_template();
 export const s_continue = $s_continue();
 export const s_break = $s_break();
 export const s_usestrict = "'use strict';";
+
+const o_pxytype = {};
+o_pxytype[s_Array] = 1;
+o_pxytype[s_Object] = 1;
+o_pxytype[s_Set] = 1;
+o_pxytype[s_Map] = 1;
+export { o_pxytype };

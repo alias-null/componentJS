@@ -42,7 +42,7 @@ const createProxy = ($this, data) => new Proxy(data, {
       let valtyp = _obj.getType(val);
 
       if (valtyp === _pam.s_Function) {
-         if (_pam.o_pxymth.has(key)) {
+         if (_pam.o_pxymth[key]) {
             return function () {
                // console.log(`function ${key} setter`,);
                let res = val.apply(target, arguments);
@@ -59,9 +59,7 @@ const createProxy = ($this, data) => new Proxy(data, {
          if ($this.$fc) {
             let objconf = $this.$fp.get(target);
             if (objconf) {
-               if (!objconf.has($this.$fc)) {
-                  objconf.add($this.$fc);
-               }
+               objconf.add($this.$fc);
             } else {
                $this.$fp.set(target, new Set([$this.$fc]));
             }
@@ -107,20 +105,15 @@ const createProxy = ($this, data) => new Proxy(data, {
       if ($this.$fc) {
          let objconf = $this.$fp.get(target);
          if (objconf) {
-            if (!objconf.has($this.$fc)) {
-               objconf.add($this.$fc);
-            }
+            objconf.add($this.$fc);
          } else {
             $this.$fp.set(target, new Set([$this.$fc]));
          }
       }
-
+      // console.log($this.$fp);
       if (
-         valtyp.slice(-5) === _pam.s_Array
-         || valtyp === _pam.s_Array
-         || valtyp === _pam.s_Object
-         || valtyp === _pam.s_Set
-         || valtyp === _pam.s_Map
+         _pam.o_pxytype[valtyp]
+         || valtyp.slice(-5) === _pam.s_Array
       ) {
          return createProxy($this, val);
       }
@@ -135,11 +128,8 @@ const createProxy = ($this, data) => new Proxy(data, {
             val = val.val;
          }
       } else if (
-         valtyp.slice(-5) === _pam.s_Array
-         || valtyp === _pam.s_Array
-         || valtyp === _pam.s_Object
-         || valtyp === _pam.s_Set
-         || valtyp === _pam.s_Map
+         _pam.o_pxytype[valtyp]
+         || valtyp.slice(-5) === _pam.s_Array
       ) {
          val = createProxy($this, val);
       }

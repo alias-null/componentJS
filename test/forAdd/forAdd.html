@@ -7,7 +7,7 @@
       if (param.val.length > 20) {
          param.val.length = 0;
       }
-   }, 1000);
+   }, 500);
 
    return {
       param,
@@ -16,6 +16,6 @@
 
 <div>
    <for .="vv1 kk1  param.val">
-      <div .="id=vv1;style.border=`${vv1+1}px solid blue`">key => ${kk1} | val =>${vv1}</div>
+      <div .="id=vv1;className=vv1;style.border=`${vv1+1}px solid blue`">key => ${kk1} | val =>${vv1}</div>
    </for>
 </div>
