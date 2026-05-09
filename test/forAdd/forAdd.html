@@ -1,0 +1,21 @@
+<script>
+   const { val, called } = this;
+   var param = val([]);
+
+   setInterval(() => {
+      param.val.push(param.val.length);
+      if (param.val.length > 20) {
+         param.val.length = 0;
+      }
+   }, 1000);
+
+   return {
+      param,
+   };
+</script>
+
+<div>
+   <for .="vv1 kk1  param.val">
+      <div .="id=vv1;style.border=`${vv1+1}px solid blue`">key => ${kk1} | val =>${vv1}</div>
+   </for>
+</div>
