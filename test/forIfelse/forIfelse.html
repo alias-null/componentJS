@@ -1,9 +1,10 @@
 <script>
    const { val, called } = this;
-   var param = val([1, 2,]);
+   var param = val([]);
 
-   // setInterval(() => {
-   // }, 500);
+   setInterval(() => {
+      param.val.push(param.val.length);
+   }, 1500);
 
    return {
       param,
