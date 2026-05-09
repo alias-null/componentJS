@@ -68,7 +68,7 @@ ${msg.val}
         const str = val('world');
         return {str};
     </script>
-    <div>hellow ${str.val}</div>
+    <div>hello ${str.val}</div>
   </template>
 </body>
 ```
