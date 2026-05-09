@@ -1,0 +1,32 @@
+<button type="button" #="dom_btn" .="class=`12321`"> click count => ${count.val}</button>
+
+<script>
+   const { val, called, binded } = this;
+   const count = val(0);
+   const dom_btn = val();
+
+   binded([
+      dom_btn, {
+         onclick() {
+
+         },
+         class: ``,
+         innerText: 'click count => ${count.val}',
+         style: {
+            border: '1px solid red',
+         },
+         attributes: {
+            'data-test': '',
+         },
+      }
+   ]);
+
+   called(() => {
+      console.log(dom_btn.val.attributes);
+   });
+
+   return {
+      count,
+      dom_btn,
+   }
+</script>

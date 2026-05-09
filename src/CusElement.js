@@ -50,6 +50,11 @@ class CusElement extends HTMLElement {
    connectedCallback() {
    }
 
+   /**
+    * 
+    * @param {String} s 
+    * @returns 
+    */
    module = (s) => {
       let m = _pam.o_mods.get(s);
       if (_obj.isStr(m)) {
@@ -59,11 +64,27 @@ class CusElement extends HTMLElement {
    };
 
    // class方法依赖 this 必用箭头函数
+   /**
+    * 
+    * @param {Function} c 
+    */
    called = (c) => {
       this.$fn = c;
    };
 
-   // class方法依赖 this 必用箭头函数
+   /**
+    * 
+    * @param {Array} a 
+    */
+   binded = (a) => {
+      console.log(a);
+   };
+
+   /**
+    * class方法依赖 this 必用箭头函数
+    * @param {*} param 
+    * @returns 
+    */
    val = (param) => {
       return _obj.isPxy(param)
          ? param : createProxy(this, { val: param, $: this });
