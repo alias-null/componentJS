@@ -23,7 +23,6 @@ const parseNodeElement = ($this, pcf, node, name) => {
 
    let conf = createNodeConf(node, node, pcf);
    conf.d = [];
-   conf.u = name;
    conf.b[0] = bind;
    conf.e = insertNodeAuchToNode;
    conf.f = ($this, cf) => {

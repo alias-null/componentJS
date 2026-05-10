@@ -15,12 +15,6 @@ const callConfProxy = ($this, objcf, callbak = () => { }) => {
          $this.$fc = conf;
          conf.f($this, conf);
          $this.$fc = _pam.o_null;
-         // if (conf.p.r === true || conf.r === conf.p.r) {
-         //    callbak($this, conf);
-         //    $this.$fc = conf;
-         //    conf.f($this, conf);
-         //    $this.$fc = _pam.o_null;
-         // }
       }
    }
 };

@@ -134,11 +134,9 @@ const parseTemplateFile = ($this) => {
    }
 
    let pcf = createNodeConf($this, $this, _pam.o_null);
-   pcf.u = $this.$cf.name;
 
    let conf = createNodeConf($this.$sd, $this.$sd, pcf);
    conf.c = _obj.newMap();
-   conf.u = _obj.nodeName($this.$sd);
    pcf.c.set($this.$sd, conf);
 
    parseChildNode($this, conf, domfratop);

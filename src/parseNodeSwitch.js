@@ -48,7 +48,6 @@ const parseNodeSwitch = ($this, pcf, node, name) => {
    let com1 = _obj.cloneNode(_pam.o_comment);
 
    let conf = createNodeConf(com1, node, pcf);
-   conf.u = name;
    conf.b[0] = arrconf;
    conf.b[1] = _obj.getAttribute(node, '.');
    conf.b[8] = { s: com0, e: com1 };

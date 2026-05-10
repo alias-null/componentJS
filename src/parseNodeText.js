@@ -32,7 +32,6 @@ const parseNodeText = ($this, pcf, node, name) => {
       if (str) {
          let cnode = _obj.createTextNode(str);
          let conf = createNodeConf(cnode, cnode, pcf);
-         conf.u = name;
          conf.s = false;
          conf.e = insertNodeAuchToNode;
          val[len] = conf;
@@ -51,7 +50,6 @@ const parseNodeText = ($this, pcf, node, name) => {
       if (_obj.trim(_obj.slice(arr[len], 2, -1))) {
          let cnode = _obj.createTextNode('');
          let conf = createNodeConf(cnode, cnode, pcf);
-         conf.u = name;
          conf.s = false;
          conf.b[0] = arr[len];
          conf.b[2] = `${ag99}=\`${conf.b[0]}\`;if(${ag01}!==${ag99}){${ag01}=${ag99}`;

@@ -28,7 +28,6 @@ const parseNodeFor = ($this, pcf, node, name) => {
    let com1 = _obj.cloneNode(_pam.o_comment);
 
    let conf = createNodeConf(com1, node, pcf);
-   conf.u = name;
    conf.b[0] = _obj.slice(_obj.filter(_obj.split(prop, /\s+/g), v => v !== ''), 0, 3);
    conf.b[1] = node;
    conf.b[8] = { s: com0, e: com1 };
