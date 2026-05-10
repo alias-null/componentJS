@@ -9,7 +9,13 @@
 </head>
 
 <body>
-   <w-test html=".//\\\//test.html"></w-test>
+   <!-- <w-test html=".//\\\//test.html"></w-test> -->
+   <div id="div"></div>
 </body>
+<script>
+   let obj = { a: document.getElementById('div') };
+   let obj1 = Object.assign({}, obj);
+   console.log(obj1)
+</script>
 
 </html>
